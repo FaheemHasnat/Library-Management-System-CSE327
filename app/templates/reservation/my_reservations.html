@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}My Reservations - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header-section">
+        <h1>My Reservations</h1>
+        <div class="actions">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Reservations Summary -->
+    <div class="summary-cards">
+        <div class="summary-card">
+            <h3>Active Reservations</h3>
+            <div class="count">{{ reservations|selectattr('Status', 'equalto', 'Active')|list|length }}</div>
+        </div>
+        <div class="summary-card">
+            <h3>Total Reservations</h3>
+            <div class="count">{{ reservations|length }}</div>
+        </div>
+    </div>
+
+    <!-- Reservations List -->
+    <div class="content-section">
+        {% if reservations %}
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Author</th>
+                            <th>Reserved Date</th>
+                            <th>Status</th>
+                            <th>Book Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr>
+                            <td>
+                                <div class="book-info">
+                                    <strong>{{ reservation.Title }}</strong>
+                                    <small>ID: {{ reservation.BookID }}</small>
+                                </div>
+                            </td>
+                            <td>{{ reservation.Author }}</td>
+                            <td>
+                                {{ reservation.ReservationDate.strftime('%Y-%m-%d %H:%M') if reservation.ReservationDate else 'N/A' }}
+                            </td>
+                            <td>
+                                <span class="status status-{{ reservation.Status.lower() }}">
+                                    {{ reservation.Status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status status-{{ reservation.BookStatus.lower() }}">
+                                    {{ reservation.BookStatus }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if reservation.Status == 'Active' %}
+                                    <form method="POST" action="{{ url_for('reservation.cancel_reservation') }}" 
+                                          style="display: inline;" 
+                                          onsubmit="return confirm('Are you sure you want to cancel this reservation?')">
+                                        <input type="hidden" name="reservation_id" value="{{ reservation.ReservationID }}">
+                                        <button type="submit" class="btn-danger btn-small">Cancel</button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">No actions available</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <h3>No Reservations Found</h3>
+                <p>You haven't made any book reservations yet.</p>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn-primary">Browse Books</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Reservation Information -->
+    <div class="info-section">
+        <h3>Reservation Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <h4>Active Reservations</h4>
+                <p>Books you have currently reserved. You will be notified when they become available.</p>
+            </div>
+            <div class="info-item">
+                <h4>Cancelled Reservations</h4>
+                <p>Reservations you have cancelled. These cannot be reactivated.</p>
+            </div>
+            <div class="info-item">
+                <h4>Collection Time</h4>
+                <p>When notified that your reserved book is available, please collect it within 24 hours.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-section h1 {
+    color: #333;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.summary-card h3 {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-card .count {
+    font-size: 32px;
+    font-weight: bold;
+    color: #d2a679;
+}
+
+.content-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.data-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.data-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.book-info strong {
+    display: block;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.book-info small {
+    color: #666;
+    font-size: 12px;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-available {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-issued {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-reserved {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #d2a679;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #c19660;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #666666;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #555555;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.info-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-section h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-item h4 {
+    margin: 0 0 10px 0;
+    color: #d2a679;
+    font-size: 14px;
+}
+
+.info-item p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.text-muted {
+    color: #999;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .actions {
+        width: 100%;
+    }
+    
+    .data-table {
+        font-size: 14px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 10px;
+    }
+}
+</style>
+{% endblock %}

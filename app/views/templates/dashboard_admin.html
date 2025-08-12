@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="fas fa-user-shield"></i> Admin Dashboard
+        </h1>
+        <p class="dashboard-subtitle">
+            Welcome, {{ current_user.name }}! Complete system overview and control.
+        </p>
+    </div>
+
+    <!-- Overview Statistics -->
+    <div class="stats-grid">
+        <!-- User Statistics -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-number" id="stat-total_users">
+                {{ stats.users.total if stats else 0 }}
+            </div>
+            <div class="stat-label">Total Users</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-graduation-cap text-primary"></i>
+            </div>
+            <div class="stat-number" id="stat-students">
+                {{ stats.users.students if stats else 0 }}
+            </div>
+            <div class="stat-label">Students</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book-reader text-info"></i>
+            </div>
+            <div class="stat-number" id="stat-librarians">
+                {{ stats.users.librarians if stats else 0 }}
+            </div>
+            <div class="stat-label">Librarians</div>
+        </div>
+
+        <!-- Book Statistics -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-number" id="stat-total_books">
+                {{ stats.books.total if stats else 0 }}
+            </div>
+            <div class="stat-label">Total Books</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle text-success"></i>
+            </div>
+            <div class="stat-number" id="stat-available_books">
+                {{ stats.books.available if stats else 0 }}
+            </div>
+            <div class="stat-label">Available Books</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book-open text-primary"></i>
+            </div>
+            <div class="stat-number" id="stat-issued_books">
+                {{ stats.books.issued if stats else 0 }}
+            </div>
+            <div class="stat-label">Issued Books</div>
+        </div>
+
+        <!-- Transaction Statistics -->
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <div class="stat-number" id="stat-total_transactions">
+                {{ stats.transactions.total if stats else 0 }}
+            </div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle text-danger"></i>
+            </div>
+            <div class="stat-number" id="stat-overdue_books">
+                {{ stats.transactions.overdue if stats else 0 }}
+            </div>
+            <div class="stat-label">Overdue Books</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-dollar-sign text-success"></i>
+            </div>
+            <div class="stat-number" id="stat-total_fines">
+                ${{ "%.2f"|format(stats.transactions.total_fines if stats else 0) }}
+            </div>
+            <div class="stat-label">Total Fines</div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 30px;">
+        <!-- Left Column -->
+        <div>
+            <!-- System Management -->
+            <div class="card mb-30">
+                <h3 class="mb-20">
+                    <i class="fas fa-cog text-primary"></i> System Management
+                </h3>
+                <div class="quick-access-grid">
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="quick-access-title">User Management</div>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="quick-access-title">Book Management</div>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="quick-access-title">Member Management</div>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="quick-access-title">Analytics</div>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="quick-access-title">System Reports</div>
+                    </a>
+                    <a href="#" class="quick-access-item">
+                        <div class="quick-access-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="quick-access-title">Database Backup</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- System Performance Metrics -->
+            <div class="card mb-30">
+                <h3 class="mb-20">
+                    <i class="fas fa-chart-line text-primary"></i> System Performance
+                </h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h5 class="mb-15">Library Utilization</h5>
+                        <div class="mb-10">
+                            <div class="flex flex-between">
+                                <span>Books Issued</span>
+                                <span class="text-primary">
+                                    {{ ((stats.books.issued / stats.books.total) * 100)|round(1) if stats and stats.books.total > 0 else 0 }}%
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ ((stats.books.issued / stats.books.total) * 100) if stats and stats.books.total > 0 else 0 }}%; background-color: #d2a679;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-10">
+                            <div class="flex flex-between">
+                                <span>Active Users</span>
+                                <span class="text-success">85%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%; background-color: #28a745;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="mb-15">System Health</h5>
+                        <div class="mb-10">
+                            <div class="flex flex-between">
+                                <span>On-time Returns</span>
+                                <span class="text-info">
+                                    {{ ((stats.transactions.active - stats.transactions.overdue) / stats.transactions.active * 100)|round(1) if stats and stats.transactions.active > 0 else 100 }}%
+                                </span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ ((stats.transactions.active - stats.transactions.overdue) / stats.transactions.active * 100) if stats and stats.transactions.active > 0 else 100 }}%; background-color: #17a2b8;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-10">
+                            <div class="flex flex-between">
+                                <span>Database Health</span>
+                                <span class="text-success">98%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 98%; background-color: #28a745;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent System Activity -->
+            {% if recent_transactions %}
+            <div class="card mb-30">
+                <h3 class="mb-20">
+                    <i class="fas fa-history text-primary"></i> Recent System Activity
+                </h3>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Book</th>
+                                <th>Action</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>{{ transaction.BorrowerName }}</td>
+                                <td>{{ transaction.Title }}</td>
+                                <td>
+                                    {% if transaction.ReturnDate %}
+                                        <span class="text-success">Return</span>
+                                    {% else %}
+                                        <span class="text-primary">Issue</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.ReturnDate %}
+                                        {{ transaction.ReturnDate|date_format }}
+                                    {% else %}
+                                        {{ transaction.IssueDate|date_format }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.ReturnDate %}
+                                        <span class="text-success">
+                                            <i class="fas fa-check-circle"></i> Completed
+                                        </span>
+                                    {% elif transaction.DueDate < current_date %}
+                                        <span class="text-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> Overdue
+                                        </span>
+                                    {% else %}
+                                        <span class="text-primary">
+                                            <i class="fas fa-clock"></i> Active
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <!-- System Alerts -->
+            <div class="card mb-30" style="border-left: 4px solid #dc3545;">
+                <h3 class="mb-20 text-danger">
+                    <i class="fas fa-exclamation-triangle"></i> System Alerts
+                </h3>
+                {% if stats and stats.transactions.overdue > 0 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>{{ stats.transactions.overdue }}</strong> overdue books require attention
+                    </div>
+                {% endif %}
+                
+                {% if stats and stats.books.available < 10 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-book"></i>
+                        Low book inventory: Only <strong>{{ stats.books.available }}</strong> books available
+                    </div>
+                {% endif %}
+
+                {% if stats and stats.transactions.total_fines > 1000 %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-dollar-sign"></i>
+                        High pending fines: <strong>${{ "%.2f"|format(stats.transactions.total_fines) }}</strong>
+                    </div>
+                {% endif %}
+
+                {% if not (stats and (stats.transactions.overdue > 0 or stats.books.available < 10 or stats.transactions.total_fines > 1000)) %}
+                    <div class="text-center text-success p-30">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>All systems operating normally</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- System Notifications -->
+            <div class="notifications-panel mb-30">
+                <h3 class="mb-20">
+                    <i class="fas fa-bell text-primary"></i> System Notifications
+                </h3>
+                {% if notifications %}
+                    {% for notification in notifications %}
+                    <div class="notification-item {% if not notification.IsRead %}unread{% endif %}">
+                        <div class="notification-message">
+                            {% if notification.UserName %}
+                                <strong>{{ notification.UserName }}:</strong>
+                            {% endif %}
+                            {{ notification.Message }}
+                        </div>
+                        <div class="notification-time">
+                            {{ notification.CreatedAt|datetime_format }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-20">
+                        <a href="#" class="btn btn-primary btn-sm">
+                            <i class="fas fa-bell"></i> Manage Notifications
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-30">
+                        <i class="fas fa-bell-slash" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>No recent notifications</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Quick System Stats -->
+            <div class="card">
+                <h3 class="mb-20">
+                    <i class="fas fa-tachometer-alt text-primary"></i> System Status
+                </h3>
+                <div class="mb-20">
+                    <div class="flex flex-between mb-10">
+                        <span><i class="fas fa-server"></i> Database</span>
+                        <span class="text-success">Online</span>
+                    </div>
+                    <div class="flex flex-between mb-10">
+                        <span><i class="fas fa-wifi"></i> Network</span>
+                        <span class="text-success">Connected</span>
+                    </div>
+                    <div class="flex flex-between mb-10">
+                        <span><i class="fas fa-shield-alt"></i> Security</span>
+                        <span class="text-success">Active</span>
+                    </div>
+                    <div class="flex flex-between mb-10">
+                        <span><i class="fas fa-cloud"></i> Backup</span>
+                        <span class="text-info">Last: 2h ago</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <a href="#" class="btn btn-primary btn-sm">
+                        <i class="fas fa-cog"></i> System Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-refresh dashboard data
+    setInterval(function() {
+        fetch('{{ url_for("dashboard.api_stats") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update user stats
+                    document.getElementById('stat-total_users').textContent = data.stats.users?.total || 0;
+                    document.getElementById('stat-students').textContent = data.stats.users?.students || 0;
+                    document.getElementById('stat-librarians').textContent = data.stats.users?.librarians || 0;
+                    
+                    // Update book stats
+                    document.getElementById('stat-total_books').textContent = data.stats.books?.total || 0;
+                    document.getElementById('stat-available_books').textContent = data.stats.books?.available || 0;
+                    document.getElementById('stat-issued_books').textContent = data.stats.books?.issued || 0;
+                    
+                    // Update transaction stats
+                    document.getElementById('stat-total_transactions').textContent = data.stats.transactions?.total || 0;
+                    document.getElementById('stat-overdue_books').textContent = data.stats.transactions?.overdue || 0;
+                    document.getElementById('stat-total_fines').textContent = '$' + parseFloat(data.stats.transactions?.total_fines || 0).toFixed(2);
+                }
+            })
+            .catch(error => console.log('Dashboard refresh failed:', error));
+    }, 60000);
+
+    // System health check
+    function checkSystemHealth() {
+        // Simulate system health check
+        const indicators = ['database', 'network', 'security', 'backup'];
+        indicators.forEach(indicator => {
+            // Random health check simulation
+            const isHealthy = Math.random() > 0.1; // 90% chance of being healthy
+            const element = document.querySelector(`[data-indicator="${indicator}"]`);
+            if (element) {
+                element.className = isHealthy ? 'text-success' : 'text-danger';
+                element.textContent = isHealthy ? 'Online' : 'Error';
+            }
+        });
+    }
+
+    // Check system health every 5 minutes
+    setInterval(checkSystemHealth, 300000);
+</script>
+
+<style>
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

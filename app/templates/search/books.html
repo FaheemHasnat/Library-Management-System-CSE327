@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}Search Books - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header-section">
+        <h1>Search Books</h1>
+        <div class="actions">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="search-section">
+        <form method="GET" action="{{ url_for('search.books') }}" class="search-form">
+            <div class="search-inputs">
+                <div class="search-group">
+                    <label for="title">Book Title</label>
+                    <input type="text" id="title" name="title" value="{{ request.args.get('title', '') }}" 
+                           placeholder="Enter book title...">
+                </div>
+                <div class="search-group">
+                    <label for="author">Author</label>
+                    <input type="text" id="author" name="author" value="{{ request.args.get('author', '') }}" 
+                           placeholder="Enter author name...">
+                </div>
+                <div class="search-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" value="{{ request.args.get('subject', '') }}" 
+                           placeholder="Enter subject...">
+                </div>
+                <div class="search-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="">All Status</option>
+                        <option value="Available" {{ 'selected' if request.args.get('status') == 'Available' }}>Available</option>
+                        <option value="Issued" {{ 'selected' if request.args.get('status') == 'Issued' }}>Issued</option>
+                        <option value="Reserved" {{ 'selected' if request.args.get('status') == 'Reserved' }}>Reserved</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-buttons">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-search"></i> Search Books
+                </button>
+                <a href="{{ url_for('search.books') }}" class="btn-secondary">
+                    <i class="fas fa-refresh"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search Results -->
+    <div class="results-section">
+        {% if books %}
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <span class="results-count">{{ books|length }} book(s) found</span>
+            </div>
+
+            <div class="books-grid">
+                {% for book in books %}
+                <div class="book-card">
+                    <div class="book-info">
+                        <h3 class="book-title">{{ book.Title }}</h3>
+                        <p class="book-author">by {{ book.Author }}</p>
+                        <p class="book-subject">{{ book.Subject }}</p>
+                        <div class="book-meta">
+                            <span class="book-id">ID: {{ book.BookID }}</span>
+                            {% if book.ISBN %}
+                                <span class="book-isbn">ISBN: {{ book.ISBN }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="book-status">
+                        <span class="status status-{{ book.Status.lower() }}">
+                            {{ book.Status }}
+                        </span>
+                    </div>
+                    <div class="book-actions">
+                        {% if current_user.role == 'Student' %}
+                            {% if book.Status == 'Available' %}
+                                <form method="POST" action="{{ url_for('reservation.reserve_book') }}" style="display: inline;">
+                                    <input type="hidden" name="book_id" value="{{ book.BookID }}">
+                                    <button type="submit" class="btn-primary btn-small" 
+                                            onclick="return confirm('Reserve this book?')">
+                                        <i class="fas fa-bookmark"></i> Reserve
+                                    </button>
+                                </form>
+                            {% elif book.Status == 'Issued' %}
+                                <form method="POST" action="{{ url_for('reservation.reserve_book') }}" style="display: inline;">
+                                    <input type="hidden" name="book_id" value="{{ book.BookID }}">
+                                    <button type="submit" class="btn-warning btn-small" 
+                                            onclick="return confirm('Join waiting list for this book?')">
+                                        <i class="fas fa-clock"></i> Join Queue
+                                    </button>
+                                </form>
+                            {% elif book.Status == 'Reserved' %}
+                                <span class="text-muted">Reserved</span>
+                            {% endif %}
+                        {% elif current_user.role in ['Librarian', 'Admin'] %}
+                            {% if book.Status == 'Available' %}
+                                <button class="btn-primary btn-small" onclick="issueBook('{{ book.BookID }}')">
+                                    <i class="fas fa-plus-circle"></i> Issue
+                                </button>
+                            {% elif book.Status == 'Issued' %}
+                                <button class="btn-warning btn-small" onclick="returnBook('{{ book.BookID }}')">
+                                    <i class="fas fa-undo"></i> Return
+                                </button>
+                            {% elif book.Status == 'Reserved' %}
+                                <button class="btn-info btn-small" onclick="viewQueue('{{ book.BookID }}')">
+                                    <i class="fas fa-list"></i> View Queue
+                                </button>
+                            {% endif %}
+                            <button class="btn-secondary btn-small" onclick="bookDetails('{{ book.BookID }}')">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination would go here if needed -->
+        {% elif request.args %}
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>No Books Found</h3>
+                <p>No books match your search criteria. Please try different keywords.</p>
+            </div>
+        {% else %}
+            <div class="info-state">
+                <div class="info-icon">📚</div>
+                <h3>Search Library Books</h3>
+                <p>Use the search form above to find books in our library collection.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-section h1 {
+    color: #333;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.search-section {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.search-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.search-group input,
+.search-group select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-group input:focus,
+.search-group select:focus {
+    outline: none;
+    border-color: #d2a679;
+    box-shadow: 0 0 0 2px rgba(210, 166, 121, 0.2);
+}
+
+.search-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+}
+
+.results-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+}
+
+.results-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.results-count {
+    background-color: #d2a679;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.book-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.book-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.book-info {
+    margin-bottom: 15px;
+}
+
+.book-title {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.book-author {
+    margin: 0 0 5px 0;
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.book-subject {
+    margin: 0 0 10px 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.book-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.book-id,
+.book-isbn {
+    font-size: 12px;
+    color: #999;
+}
+
+.book-status {
+    margin-bottom: 15px;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-available {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-issued {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-reserved {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.book-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-warning,
+.btn-info {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-primary {
+    background-color: #d2a679;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #c19660;
+}
+
+.btn-secondary {
+    background-color: #666666;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #555555;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.empty-state,
+.info-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon,
+.info-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3,
+.info-state h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.empty-state p,
+.info-state p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.text-muted {
+    color: #999;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .search-inputs {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-buttons {
+        flex-direction: column;
+    }
+    
+    .books-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function issueBook(bookId) {
+    alert(`Issue book ${bookId} - This feature will be implemented later.`);
+}
+
+function returnBook(bookId) {
+    if (confirm('Return this book?')) {
+        // Process return and check reservation queue
+        fetch('/reservation/process-return', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'book_id=' + encodeURIComponent(bookId)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Book returned successfully');
+                location.reload();
+            } else {
+                alert('Error returning book');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error returning book');
+        });
+    }
+}
+
+function viewQueue(bookId) {
+    window.location.href = '/reservation/queue/' + bookId;
+}
+
+function bookDetails(bookId) {
+    alert(`Book details for ${bookId} - This feature will be implemented later.`);
+}
+</script>
+{% endblock %}

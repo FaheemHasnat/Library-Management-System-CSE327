@@ -1,0 +1,638 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Reservations - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header-section">
+        <h1>Manage Reservations</h1>
+        <div class="actions">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    {% if statistics %}
+    <div class="statistics-section">
+        <h2>Reservation Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Active Reservations</h3>
+                <div class="stat-number">{{ statistics.total_active or 0 }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>This Week</h3>
+                <div class="stat-number">{{ statistics.recent_week or 0 }}</div>
+            </div>
+            {% if statistics.by_status %}
+                {% for status, count in statistics.by_status.items() %}
+                <div class="stat-card">
+                    <h3>{{ status }} Reservations</h3>
+                    <div class="stat-number">{{ count }}</div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Reservations Management -->
+    <div class="content-section">
+        <div class="section-header">
+            <h2>All Reservations</h2>
+            <div class="filters">
+                <select id="statusFilter" class="filter-select">
+                    <option value="">All Statuses</option>
+                    <option value="Active">Active</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search by book title or user..." class="search-input">
+            </div>
+        </div>
+
+        {% if reservations %}
+            <div class="table-container">
+                <table class="data-table" id="reservationsTable">
+                    <thead>
+                        <tr>
+                            <th>Reservation ID</th>
+                            <th>Book Details</th>
+                            <th>User</th>
+                            <th>Reserved Date</th>
+                            <th>Status</th>
+                            <th>Queue Position</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr data-status="{{ reservation.Status }}" data-book="{{ reservation.Title }}" data-user="{{ reservation.UserName }}">
+                            <td>
+                                <code>{{ reservation.ReservationID[:8] }}...</code>
+                            </td>
+                            <td>
+                                <div class="book-details">
+                                    <strong>{{ reservation.Title }}</strong>
+                                    <div class="book-meta">
+                                        <span>by {{ reservation.Author }}</span>
+                                        <span>ID: {{ reservation.BookID }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-info">
+                                    <strong>{{ reservation.UserName }}</strong>
+                                    <small>{{ reservation.UserID }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                {{ reservation.ReservationDate.strftime('%Y-%m-%d %H:%M') if reservation.ReservationDate else 'N/A' }}
+                            </td>
+                            <td>
+                                <span class="status status-{{ reservation.Status.lower() }}">
+                                    {{ reservation.Status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if reservation.Status == 'Active' %}
+                                    <button class="btn-info btn-small" onclick="viewQueue('{{ reservation.BookID }}')">
+                                        View Queue
+                                    </button>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    {% if reservation.Status == 'Active' %}
+                                        <button class="btn-warning btn-small" onclick="contactUser('{{ reservation.UserID }}')">
+                                            Contact
+                                        </button>
+                                        <button class="btn-danger btn-small" onclick="cancelReservation('{{ reservation.ReservationID }}')">
+                                            Cancel
+                                        </button>
+                                    {% else %}
+                                        <span class="text-muted">No actions</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination would go here if needed -->
+            <div class="table-footer">
+                <div class="results-info">
+                    Showing {{ reservations|length }} reservations
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No Reservations Found</h3>
+                <p>There are currently no reservations in the system.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-grid">
+            <button class="action-card" onclick="exportReservations()">
+                <div class="action-icon">📄</div>
+                <div class="action-text">Export Reservations</div>
+            </button>
+            <button class="action-card" onclick="sendBulkNotifications()">
+                <div class="action-icon">📧</div>
+                <div class="action-text">Send Notifications</div>
+            </button>
+            <button class="action-card" onclick="viewStatistics()">
+                <div class="action-icon">📊</div>
+                <div class="action-text">View Reports</div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Queue Modal -->
+<div id="queueModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Reservation Queue</h3>
+            <span class="close" onclick="closeModal('queueModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="queueContent">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-section h1 {
+    color: #333;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.statistics-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.statistics-section h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border-left: 4px solid #d2a679;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #d2a679;
+}
+
+.content-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.filter-select,
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-input {
+    width: 250px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.data-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.data-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.book-details strong {
+    display: block;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.book-meta {
+    color: #666;
+    font-size: 12px;
+}
+
+.book-meta span {
+    display: block;
+}
+
+.user-info strong {
+    display: block;
+    color: #333;
+}
+
+.user-info small {
+    color: #666;
+    font-size: 12px;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-warning,
+.btn-info {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.btn-primary {
+    background-color: #d2a679;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #666666;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.table-footer {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.results-info {
+    color: #666;
+    font-size: 14px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.quick-actions {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.quick-actions h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.action-card {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.action-text {
+    font-weight: 500;
+    color: #333;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+}
+
+.close {
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.text-muted {
+    color: #999;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .filters {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .search-input {
+        width: 100%;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('reservationsTable');
+    
+    function filterTable() {
+        const statusValue = statusFilter.value.toLowerCase();
+        const searchValue = searchInput.value.toLowerCase();
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        for (let row of rows) {
+            const status = row.getAttribute('data-status').toLowerCase();
+            const book = row.getAttribute('data-book').toLowerCase();
+            const user = row.getAttribute('data-user').toLowerCase();
+            
+            const statusMatch = !statusValue || status === statusValue;
+            const searchMatch = !searchValue || 
+                                book.includes(searchValue) || 
+                                user.includes(searchValue);
+            
+            row.style.display = statusMatch && searchMatch ? '' : 'none';
+        }
+    }
+    
+    statusFilter.addEventListener('change', filterTable);
+    searchInput.addEventListener('input', filterTable);
+});
+
+// Modal functions
+function viewQueue(bookId) {
+    document.getElementById('queueModal').style.display = 'block';
+    
+    fetch(`/reservation/api/queue/${bookId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let content = '<h4>Reservation Queue</h4>';
+                if (data.queue.length === 0) {
+                    content += '<p>No active reservations for this book.</p>';
+                } else {
+                    content += '<ol>';
+                    data.queue.forEach(reservation => {
+                        content += `<li><strong>${reservation.UserName}</strong> - Reserved on ${reservation.ReservationDate}</li>`;
+                    });
+                    content += '</ol>';
+                }
+                document.getElementById('queueContent').innerHTML = content;
+            } else {
+                document.getElementById('queueContent').innerHTML = '<p>Error loading queue information.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('queueContent').innerHTML = '<p>Error loading queue information.</p>';
+        });
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function contactUser(userId) {
+    alert(`Contact user ${userId} - This feature will be implemented later.`);
+}
+
+function cancelReservation(reservationId) {
+    if (confirm('Are you sure you want to cancel this reservation?')) {
+        // Implementation would go here
+        alert('Reservation cancellation - This feature will be implemented later.');
+    }
+}
+
+function exportReservations() {
+    alert('Export reservations - This feature will be implemented later.');
+}
+
+function sendBulkNotifications() {
+    alert('Send bulk notifications - This feature will be implemented later.');
+}
+
+function viewStatistics() {
+    alert('View detailed statistics - This feature will be implemented later.');
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('queueModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}
