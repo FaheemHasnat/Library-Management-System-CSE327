@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Library Management System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        
+        <div class="auth-side-panel">
+            <div>
+                <h3 style="font-size: 1.8rem; margin-bottom: 20px;">
+                    <i class="fas fa-user-plus"></i><br>
+                    Join Our Library
+                </h3>
+                <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px;">
+                    Create your account to access thousands of books, manage your reading preferences, and stay connected with our library community.
+                </p>
+                
+                <div style="margin-top: 40px;">
+                    <h4 style="margin-bottom: 15px;">Already have an account?</h4>
+                    <p style="margin-bottom: 20px;">Sign in to your existing account</p>
+                    <a href="{{ url_for('user.login') }}" class="btn btn-secondary">
+                        SIGN IN
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="auth-form">
+            <h2 class="auth-title">CREATE ACCOUNT</h2>
+            
+            <form method="POST" action="{{ url_for('user.signup') }}">
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="form-input" 
+                        placeholder="ENTER YOUR FULL NAME"
+                        required
+                        value="{{ request.form.name if request.form.name else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        placeholder="ENTER YOUR EMAIL"
+                        required
+                        value="{{ request.form.email if request.form.email else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="role" class="form-label">Account Type</label>
+                    <select id="role" name="role" class="form-select" required>
+                        <option value="Student" {{ 'selected' if request.form.role == 'Student' else '' }}>
+                            Student
+                        </option>
+                        <option value="Librarian" {{ 'selected' if request.form.role == 'Librarian' else '' }}>
+                            Librarian
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="CREATE A PASSWORD"
+                        required
+                        minlength="6"
+                    >
+                    <small class="text-muted">Password must be at least 6 characters long</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirm_password" 
+                        name="confirm_password" 
+                        class="form-input" 
+                        placeholder="CONFIRM YOUR PASSWORD"
+                        required
+                        minlength="6"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i> CREATE ACCOUNT
+                    </button>
+                </div>
+            </form>
+
+           
+        </div>
+    </div>
+</div>
+
+
+<div class="container" style="max-width: 900px; margin-top: 30px;">
+    <div class="card">
+        <h4 class="text-center mb-20">
+            <i class="fas fa-info-circle text-primary"></i> Account Types
+        </h4>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="text-center p-20" style="border: 1px solid #e9ecef; border-radius: 8px;">
+                <div class="stat-icon">
+                    <i class="fas fa-graduation-cap text-primary"></i>
+                </div>
+                <h5 class="text-primary">Student Account</h5>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Borrow and return books</li>
+                    <li>View personal reading history</li>
+                    <li>Make book reservations</li>
+                    <li>Receive due date notifications</li>
+                </ul>
+            </div>
+            
+            <div class="text-center p-20" style="border: 1px solid #e9ecef; border-radius: 8px;">
+                <div class="stat-icon">
+                    <i class="fas fa-book-reader text-primary"></i>
+                </div>
+                <h5 class="text-primary">Librarian Account</h5>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Manage book inventory</li>
+                    <li>Issue and return books</li>
+                    <li>Manage member accounts</li>
+                    <li>Generate library reports</li>
+                </ul>
+            </div>
+            
+            <div class="text-center p-20" style="border: 1px solid #e9ecef; border-radius: 8px;">
+                <div class="stat-icon">
+                    <i class="fas fa-user-shield text-primary"></i>
+                </div>
+                <h5 class="text-primary">Admin Account</h5>
+                <ul style="text-align: left; margin-top: 15px;">
+                    <li>Full system access</li>
+                    <li>User account management</li>
+                    <li>System configuration</li>
+                    <li>Advanced analytics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const form = document.querySelector('form');
+        
+        function validatePasswords() {
+            const passwordValue = password.value;
+            const confirmPasswordValue = confirmPassword.value;
+            
+            
+            if (passwordValue.length > 0 && passwordValue.length < 6) {
+                password.style.borderColor = '#dc3545';
+                return false;
+            } else if (passwordValue.length >= 6) {
+                password.style.borderColor = '#28a745';
+            } else {
+                password.style.borderColor = '#ddd';
+            }
+            
+            
+            if (confirmPasswordValue.length > 0) {
+                if (passwordValue === confirmPasswordValue) {
+                    confirmPassword.style.borderColor = '#28a745';
+                    return true;
+                } else {
+                    confirmPassword.style.borderColor = '#dc3545';
+                    return false;
+                }
+            } else {
+                confirmPassword.style.borderColor = '#ddd';
+                return false;
+            }
+        }
+        
+        password.addEventListener('input', validatePasswords);
+        confirmPassword.addEventListener('input', validatePasswords);
+        
+        
+        form.addEventListener('submit', function(e) {
+            if (password.value !== confirmPassword.value) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                confirmPassword.focus();
+                return false;
+            }
+            
+            if (password.value.length < 6) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long!');
+                password.focus();
+                return false;
+            }
+        });
+        
+        
+        password.addEventListener('input', function() {
+            const strength = calculatePasswordStrength(this.value);
+            updatePasswordStrengthIndicator(strength);
+        });
+    });
+    
+    function calculatePasswordStrength(password) {
+        let strength = 0;
+        
+        if (password.length >= 6) strength += 1;
+        if (password.length >= 8) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[a-z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        
+        return Math.min(strength, 4);
+    }
+    
+    function updatePasswordStrengthIndicator(strength) {
+        const password = document.getElementById('password');
+        const strengthTexts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+        const strengthColors = ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#28a745'];
+        
+        
+        let indicator = document.getElementById('password-strength');
+        if (indicator) {
+            indicator.remove();
+        }
+        
+        
+        if (password.value.length > 0) {
+            indicator = document.createElement('small');
+            indicator.id = 'password-strength';
+            indicator.style.color = strengthColors[strength];
+            indicator.style.fontWeight = 'bold';
+            indicator.textContent = `Password Strength: ${strengthTexts[strength]}`;
+            
+            password.parentNode.appendChild(indicator);
+        }
+    }
+</script>
+{% endblock %}

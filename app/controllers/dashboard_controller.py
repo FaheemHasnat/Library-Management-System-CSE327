@@ -1,8 +1,20 @@
+<<<<<<< HEAD
+=======
+"""
+Dashboard Controller for Library Management System
+Handles role-based dashboard routes and data display
+"""
+
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
 from flask import Blueprint, render_template, session, redirect, url_for, flash, jsonify
 from app.models.dashboard_model import DashboardModel
 from app.controllers.user_controller import login_required, role_required
 import logging
 
+<<<<<<< HEAD
+=======
+# Create blueprint for dashboard routes
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
 dashboard_bp = Blueprint('dashboard', __name__)
 
 
@@ -10,13 +22,23 @@ dashboard_bp = Blueprint('dashboard', __name__)
 @dashboard_bp.route('/dashboard')
 @login_required
 def dashboard():
+<<<<<<< HEAD
+=======
+    """
+    Route users to appropriate dashboard based on their role
+    """
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     user_role = session.get('user_role')
     
     if user_role == 'Admin':
         return redirect(url_for('dashboard.admin_dashboard'))
     elif user_role == 'Librarian':
         return redirect(url_for('dashboard.librarian_dashboard'))
+<<<<<<< HEAD
     else:
+=======
+    else:  # Student
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         return redirect(url_for('dashboard.student_dashboard'))
 
 
@@ -24,16 +46,34 @@ def dashboard():
 @login_required
 @role_required(['Admin'])
 def admin_dashboard():
+<<<<<<< HEAD
     try:
         stats = DashboardModel.get_system_statistics()
         
+=======
+    """
+    Admin dashboard with system-wide statistics and controls
+    """
+    try:
+        # Get system statistics
+        stats = DashboardModel.get_system_statistics()
+        
+        # Get recent notifications
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         notifications = DashboardModel.get_recent_notifications(
             session['user_id'], 
             'Admin'
         )
         
+<<<<<<< HEAD
         overdue_books = DashboardModel.get_overdue_books_details('Admin')
         
+=======
+        # Get overdue books details
+        overdue_books = DashboardModel.get_overdue_books_details('Admin')
+        
+        # Get recent transactions
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         recent_transactions = DashboardModel.get_recent_transactions('Admin')
         
         if stats is None:
@@ -59,16 +99,34 @@ def admin_dashboard():
 @login_required
 @role_required(['Librarian', 'Admin'])
 def librarian_dashboard():
+<<<<<<< HEAD
     try:
         stats = DashboardModel.get_librarian_statistics()
         
+=======
+    """
+    Librarian dashboard with library operation statistics
+    """
+    try:
+        # Get librarian-specific statistics
+        stats = DashboardModel.get_librarian_statistics()
+        
+        # Get recent notifications
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         notifications = DashboardModel.get_recent_notifications(
             session['user_id'], 
             'Librarian'
         )
         
+<<<<<<< HEAD
         overdue_books = DashboardModel.get_overdue_books_details('Librarian')
         
+=======
+        # Get overdue books details
+        overdue_books = DashboardModel.get_overdue_books_details('Librarian')
+        
+        # Get recent transactions
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         recent_transactions = DashboardModel.get_recent_transactions('Librarian')
         
         if stats is None:
@@ -93,19 +151,38 @@ def librarian_dashboard():
 @dashboard_bp.route('/student')
 @login_required
 def student_dashboard():
+<<<<<<< HEAD
     try:
         stats = DashboardModel.get_student_statistics(session['user_id'])
         
+=======
+    """
+    Student dashboard with personal library information
+    """
+    try:
+        # Get student-specific statistics
+        stats = DashboardModel.get_student_statistics(session['user_id'])
+        
+        # Get recent notifications
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         notifications = DashboardModel.get_recent_notifications(
             session['user_id'], 
             'Student'
         )
         
+<<<<<<< HEAD
+=======
+        # Get overdue books details for this student
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         overdue_books = DashboardModel.get_overdue_books_details(
             'Student', 
             session['user_id']
         )
         
+<<<<<<< HEAD
+=======
+        # Get recent transactions for this student
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         recent_transactions = DashboardModel.get_recent_transactions(
             'Student', 
             session['user_id']
@@ -133,6 +210,12 @@ def student_dashboard():
 @dashboard_bp.route('/api/stats')
 @login_required
 def api_stats():
+<<<<<<< HEAD
+=======
+    """
+    API endpoint to get dashboard statistics in JSON format
+    """
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     try:
         user_role = session.get('user_role')
         user_id = session.get('user_id')
@@ -141,7 +224,11 @@ def api_stats():
             stats = DashboardModel.get_system_statistics()
         elif user_role == 'Librarian':
             stats = DashboardModel.get_librarian_statistics()
+<<<<<<< HEAD
         else:
+=======
+        else:  # Student
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
             stats = DashboardModel.get_student_statistics(user_id)
         
         if stats is None:
@@ -160,6 +247,12 @@ def api_stats():
 @dashboard_bp.route('/api/notifications')
 @login_required
 def api_notifications():
+<<<<<<< HEAD
+=======
+    """
+    API endpoint to get notifications in JSON format
+    """
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     try:
         user_role = session.get('user_role')
         user_id = session.get('user_id')
@@ -179,6 +272,12 @@ def api_notifications():
 @dashboard_bp.route('/api/overdue-books')
 @login_required
 def api_overdue_books():
+<<<<<<< HEAD
+=======
+    """
+    API endpoint to get overdue books in JSON format
+    """
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     try:
         user_role = session.get('user_role')
         user_id = session.get('user_id')
@@ -201,7 +300,16 @@ def api_overdue_books():
 @dashboard_bp.route('/notifications/mark-read/<int:notification_id>')
 @login_required
 def mark_notification_read(notification_id):
+<<<<<<< HEAD
     
+=======
+    """
+    Mark a notification as read
+    
+    Args:
+        notification_id (int): ID of notification to mark as read
+    """
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     try:
         success = DashboardModel.mark_notification_read(notification_id)
         
@@ -218,8 +326,17 @@ def mark_notification_read(notification_id):
 @dashboard_bp.route('/quick-access')
 @login_required
 def quick_access():
+<<<<<<< HEAD
     user_role = session.get('user_role')
     
+=======
+    """
+    Display quick access menu for different modules
+    """
+    user_role = session.get('user_role')
+    
+    # Define module access based on role
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     modules = {
         'Admin': [
             {'name': 'User Management', 'url': '#', 'icon': 'users'},
@@ -255,11 +372,19 @@ def quick_access():
 
 @dashboard_bp.errorhandler(403)
 def forbidden(error):
+<<<<<<< HEAD
+=======
+    """Handle 403 Forbidden errors"""
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     flash('You do not have permission to access this page', 'error')
     return redirect(url_for('dashboard.student_dashboard'))
 
 
 @dashboard_bp.errorhandler(404)
 def not_found(error):
+<<<<<<< HEAD
+=======
+    """Handle 404 Not Found errors"""
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     flash('Page not found', 'error')
     return redirect(url_for('dashboard.dashboard'))

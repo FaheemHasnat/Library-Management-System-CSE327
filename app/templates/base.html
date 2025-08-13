@@ -5,17 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Library Management System{% endblock %}</title>
     
+<<<<<<< HEAD
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
     
     <link rel="stylesheet" href="https:
+=======
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% if current_user.logged_in %}
+<<<<<<< HEAD
     
+=======
+    <!-- Navigation Bar -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     <nav class="navbar">
         <div class="nav-container">
             <a href="{{ url_for('dashboard.dashboard') }}" class="nav-brand">
@@ -57,7 +69,11 @@
     </nav>
     {% endif %}
 
+<<<<<<< HEAD
     
+=======
+    <!-- Flash Messages -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="container">
@@ -72,20 +88,34 @@
         {% endif %}
     {% endwith %}
 
+<<<<<<< HEAD
     
+=======
+    <!-- Main Content -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
     <main>
         {% block content %}{% endblock %}
     </main>
 
+<<<<<<< HEAD
     
     <script>
         
+=======
+    <!-- JavaScript -->
+    <script>
+        // Dropdown toggle function
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
 
+<<<<<<< HEAD
         
+=======
+        // Close dropdown when clicking outside
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         window.onclick = function(event) {
             if (!event.target.matches('.dropdown-toggle')) {
                 const dropdowns = document.getElementsByClassName('dropdown-menu');
@@ -95,7 +125,11 @@
             }
         }
 
+<<<<<<< HEAD
         
+=======
+        // Auto-hide alerts after 5 seconds
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         document.addEventListener('DOMContentLoaded', function() {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
@@ -108,14 +142,22 @@
             });
         });
 
+<<<<<<< HEAD
         
+=======
+        // Update dashboard stats every 30 seconds
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         {% if current_user.logged_in %}
         function updateDashboardStats() {
             fetch('{{ url_for("dashboard.api_stats") }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+<<<<<<< HEAD
                         
+=======
+                        // Update stats display if elements exist
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
                         Object.keys(data.stats).forEach(key => {
                             const element = document.getElementById('stat-' + key);
                             if (element) {
@@ -127,7 +169,11 @@
                 .catch(error => console.log('Stats update failed:', error));
         }
 
+<<<<<<< HEAD
         
+=======
+        // Update stats every 30 seconds
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
         setInterval(updateDashboardStats, 30000);
         {% endif %}
     </script>
@@ -137,7 +183,11 @@
 </html>
 
 <style>
+<<<<<<< HEAD
 
+=======
+/* Additional styles for dropdown */
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
 .dropdown {
     position: relative;
     display: inline-block;
