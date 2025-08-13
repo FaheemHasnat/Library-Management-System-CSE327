@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center" style="padding: 60px 20px;">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <div style="font-size: 8rem; color: #d2a679; margin-bottom: 20px;">
+                <i class="fas fa-book-dead"></i>
+            </div>
+            
+            <h1 style="font-size: 3rem; margin-bottom: 20px; color: #333;">
+                404
+            </h1>
+            
+            <h2 style="font-size: 1.5rem; margin-bottom: 20px; color: #666;">
+                Oops! Page Not Found
+            </h2>
+            
+            <p style="font-size: 1.1rem; color: #666; margin-bottom: 40px; line-height: 1.6;">
+                The page you're looking for seems to have been misplaced, just like a book that's been returned to the wrong shelf. 
+                Don't worry, we'll help you find what you're looking for!
+            </p>
+            
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                {% if current_user.logged_in %}
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                    </a>
+                    
+                    <a href="#" class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('user.login') }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    
+                    <a href="{{ url_for('user.signup') }}" class="btn btn-secondary">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    
+    {% if current_user.logged_in %}
+    <div class="card" style="max-width: 800px; margin: 40px auto 0;">
+        <h3 class="text-center mb-20">
+            <i class="fas fa-compass text-primary"></i> Quick Navigation
+        </h3>
+        
+        <div class="quick-access-grid">
+            {% if current_user.role == 'Student' %}
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="quick-access-title">Search Books</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <div class="quick-access-title">My Books</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <div class="quick-access-title">Reservations</div>
+                </a>
+                
+                <a href="{{ url_for('user.profile') }}" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="quick-access-title">Profile</div>
+                </a>
+            {% elif current_user.role == 'Librarian' %}
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="quick-access-title">Issue Book</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <div class="quick-access-title">Return Book</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="quick-access-title">Manage Members</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="quick-access-title">Manage Books</div>
+                </a>
+            {% elif current_user.role == 'Admin' %}
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div class="quick-access-title">User Management</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="quick-access-title">Reports</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="quick-access-title">System Settings</div>
+                </a>
+                
+                <a href="#" class="quick-access-item">
+                    <div class="quick-access-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="quick-access-title">Database</div>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    
+    <div class="card" style="max-width: 600px; margin: 40px auto 0;">
+        <h3 class="text-center mb-20">
+            <i class="fas fa-lightbulb text-primary"></i> Did You Know?
+        </h3>
+        
+        <div id="libraryFact" class="text-center" style="font-size: 1.1rem; line-height: 1.6; color: #666;">
+            
+        </div>
+        
+        <div class="text-center mt-20">
+            <button class="btn btn-secondary btn-sm" onclick="loadRandomFact()">
+                <i class="fas fa-sync-alt"></i> Another Fact
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    
+    const libraryFacts = [
+        "The oldest known library dates back to 2600 BC in ancient Mesopotamia!",
+        "The Library of Alexandria was once the largest library in the ancient world.",
+        "There are over 116,000 libraries in the United States alone.",
+        "The word 'library' comes from the Latin word 'liber' meaning 'book'.",
+        "The first public library in the US was established in 1833 in Peterborough, New Hampshire.",
+        "Some libraries have therapy dogs to help reduce stress during exam periods!",
+        "The largest library in the world is the Library of Congress with over 17 million books.",
+        "Ancient libraries used to chain books to prevent theft!",
+        "The Dewey Decimal System was invented in 1876 and is still used today.",
+        "Many libraries offer more than books - they have maker spaces, 3D printers, and video games!"
+    ];
+    
+    function loadRandomFact() {
+        const randomIndex = Math.floor(Math.random() * libraryFacts.length);
+        const factElement = document.getElementById('libraryFact');
+        
+        
+        factElement.style.opacity = '0.3';
+        
+        setTimeout(() => {
+            factElement.textContent = libraryFacts[randomIndex];
+            factElement.style.opacity = '1';
+        }, 200);
+    }
+    
+    
+    document.addEventListener('DOMContentLoaded', loadRandomFact);
+    
+    
+    setInterval(loadRandomFact, 10000);
+</script>
+
+<style>
+    
+    .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    #libraryFact {
+        transition: opacity 0.3s ease;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+        
+        h1 {
+            font-size: 2rem !important;
+        }
+        
+        h2 {
+            font-size: 1.2rem !important;
+        }
+        
+        .quick-access-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+    }
+</style>
+{% endblock %}

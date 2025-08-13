@@ -1,0 +1,488 @@
+{% extends "base.html" %}
+
+{% block title %}Reservation Queue - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header-section">
+        <h1>Reservation Queue</h1>
+        <div class="actions">
+            <a href="{{ url_for('reservation.index') }}" class="btn-secondary">
+                ← Back to Reservations
+            </a>
+        </div>
+    </div>
+
+    
+    {% if book_info %}
+    <div class="book-info-section">
+        <div class="book-card">
+            <div class="book-details">
+                <h2>{{ book_info.Title }}</h2>
+                <p class="book-author">by {{ book_info.Author }}</p>
+                <div class="book-meta">
+                    <span class="book-id">Book ID: {{ book_info.BookID }}</span>
+                    <span class="book-status status-{{ book_info.Status.lower() }}">
+                        {{ book_info.Status }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    
+    <div class="content-section">
+        <div class="section-header">
+            <h2>Reservation Queue</h2>
+            <div class="queue-info">
+                <span class="queue-count">{{ queue|length }} people in queue</span>
+            </div>
+        </div>
+
+        {% if queue %}
+            <div class="queue-list">
+                {% for reservation in queue %}
+                <div class="queue-item" data-position="{{ loop.index }}">
+                    <div class="position-badge">{{ loop.index }}</div>
+                    <div class="user-info">
+                        <h3>{{ reservation.UserName }}</h3>
+                        <p class="user-id">User ID: {{ reservation.UserID }}</p>
+                        <p class="reservation-date">
+                            Reserved: {{ reservation.ReservationDate.strftime('%Y-%m-%d %H:%M') if reservation.ReservationDate else 'N/A' }}
+                        </p>
+                    </div>
+                    <div class="queue-actions">
+                        {% if loop.index == 1 %}
+                            <span class="next-badge">Next in line</span>
+                        {% endif %}
+                        <button class="btn-info btn-small" onclick="contactUser('{{ reservation.UserID }}')">
+                            Contact
+                        </button>
+                        <button class="btn-warning btn-small" onclick="notifyUser('{{ reservation.UserID }}')">
+                            Notify
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            
+            <div class="queue-management">
+                <h3>Queue Management</h3>
+                <div class="management-actions">
+                    <button class="btn-primary" onclick="notifyNext()">
+                        Notify Next Person
+                    </button>
+                    <button class="btn-secondary" onclick="notifyAll()">
+                        Send Update to All
+                    </button>
+                    <button class="btn-warning" onclick="exportQueue()">
+                        Export Queue
+                    </button>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No Reservations in Queue</h3>
+                <p>There are currently no active reservations for this book.</p>
+                <p>The book is available for immediate issue.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    
+    <div class="info-section">
+        <h3>Queue Management Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <h4>Queue Order</h4>
+                <p>Reservations are processed in the order they were made (First Come, First Served).</p>
+            </div>
+            <div class="info-item">
+                <h4>Notification Process</h4>
+                <p>When the book becomes available, the first person in queue is automatically notified.</p>
+            </div>
+            <div class="info-item">
+                <h4>Collection Time</h4>
+                <p>Users have 24 hours to collect the book after being notified of availability.</p>
+            </div>
+            <div class="info-item">
+                <h4>Queue Updates</h4>
+                <p>If a user doesn't collect within 24 hours, the book is offered to the next person in queue.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-section h1 {
+    color: #333;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.book-info-section {
+    margin-bottom: 30px;
+}
+
+.book-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 4px solid #d2a679;
+}
+
+.book-details h2 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.book-author {
+    margin: 0 0 15px 0;
+    color: #666;
+    font-size: 16px;
+    font-style: italic;
+}
+
+.book-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.book-id {
+    color: #666;
+    font-size: 14px;
+}
+
+.content-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.queue-count {
+    background-color: #d2a679;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.queue-list {
+    padding: 0;
+}
+
+.queue-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.3s ease;
+}
+
+.queue-item:hover {
+    background-color: #f8f9fa;
+}
+
+.queue-item:last-child {
+    border-bottom: none;
+}
+
+.position-badge {
+    background-color: #d2a679;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-info h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.user-id {
+    margin: 0 0 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.reservation-date {
+    margin: 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.queue-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.next-badge {
+    background-color: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.queue-management {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.queue-management h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.management-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-warning,
+.btn-info {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.btn-primary {
+    background-color: #d2a679;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #c19660;
+}
+
+.btn-secondary {
+    background-color: #666666;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #555555;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-available {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-issued {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-reserved {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.info-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-section h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.info-item h4 {
+    margin: 0 0 10px 0;
+    color: #d2a679;
+    font-size: 14px;
+}
+
+.info-item p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .queue-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .queue-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .management-actions {
+        flex-direction: column;
+    }
+    
+    .management-actions button {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+function contactUser(userId) {
+    alert(`Contact user ${userId} - This feature will be implemented later.`);
+}
+
+function notifyUser(userId) {
+    if (confirm(`Send notification to user ${userId}?`)) {
+        alert('Notification sent - This feature will be implemented later.');
+    }
+}
+
+function notifyNext() {
+    if (confirm('Notify the next person in queue?')) {
+        alert('Next person notified - This feature will be implemented later.');
+    }
+}
+
+function notifyAll() {
+    if (confirm('Send status update to all people in queue?')) {
+        alert('All users notified - This feature will be implemented later.');
+    }
+}
+
+function exportQueue() {
+    alert('Export queue data - This feature will be implemented later.');
+}
+</script>
+{% endblock %}
