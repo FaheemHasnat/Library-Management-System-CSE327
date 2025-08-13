@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Book Reservation - Library Management System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header-section">
+        <h1>Book Reservation</h1>
+        <div class="actions">
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    
+    <div class="results-section">
+        {% if books %}
+            <div class="results-header">
+                <h2>Available Books - Select Books to Reserve</h2>
+                <span class="results-count">{{ books|length }} available book(s)</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('reservation.reserve_multiple_books') }}" id="reservationForm">
+                <div class="books-list">
+                    {% for book in books %}
+                    {% if book.Status == 'Available' %}
+                    <div class="book-item">
+                        <div class="book-checkbox">
+                            {% if current_user.role == 'Student' %}
+                                <input type="checkbox" name="book_ids" value="{{ book.BookID }}" id="book_{{ book.BookID }}">
+                            {% endif %}
+                        </div>
+                        <div class="book-info">
+                            <h3>{{ book.Title }}</h3>
+                            <p class="author">by {{ book.Author }}</p>
+                            <p class="subject">{{ book.Subject }}</p>
+                            <div class="book-meta">
+                                <span class="book-id">ID: {{ book.BookID }}</span>
+                                {% if book.ISBN %}
+                                    <span class="book-isbn">ISBN: {{ book.ISBN }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="book-status">
+                            <span class="status status-available">
+                                Available
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if current_user.role == 'Student' %}
+                <div class="reservation-actions">
+                    <button type="submit" class="btn-primary" id="reserveBtn" disabled>
+                        <i class="fas fa-bookmark"></i> Reserve Selected Books
+                    </button>
+                    <a href="{{ url_for('reservation.my_reservations') }}" class="btn-secondary">
+                        <i class="fas fa-list"></i> View My Reservations
+                    </a>
+                </div>
+                {% endif %}
+            </form>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <h3>No Available Books</h3>
+                <p>There are currently no available books for reservation. Please check back later.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    
+    <div class="info-section">
+        <h3>How to Reserve Books</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-check-square text-primary"></i>
+                </div>
+                <h4>1. Select Books</h4>
+                <p>Check the boxes next to the books you want to reserve from the available collection.</p>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-bookmark text-success"></i>
+                </div>
+                <h4>2. Reserve Books</h4>
+                <p>Click "Reserve Selected Books" to add them to your reservations.</p>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-list text-info"></i>
+                </div>
+                <h4>3. Check Status</h4>
+                <p>View your reservations in "My Reservations" to track their status.</p>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">
+                    <i class="fas fa-hand-holding text-warning"></i>
+                </div>
+                <h4>4. Collect Books</h4>
+                <p>Visit the library to collect your reserved books when ready.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-section h1 {
+    color: #333;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.results-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+}
+
+.results-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.results-count {
+    background-color: #d2a679;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.books-list {
+    padding: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.book-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.book-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.book-checkbox {
+    margin-right: 15px;
+}
+
+.book-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.book-info {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.book-info h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.book-info .author {
+    margin: 0 0 5px 0;
+    color: #666;
+    font-style: italic;
+}
+
+.book-info .subject {
+    margin: 0 0 10px 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.book-meta {
+    display: flex;
+    gap: 15px;
+}
+
+.book-id,
+.book-isbn {
+    font-size: 12px;
+    color: #999;
+}
+
+.book-status {
+    text-align: right;
+}
+
+.status {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-available {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.reservation-actions {
+    padding: 20px;
+    border-top: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #d2a679;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: #c19660;
+}
+
+.btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: #666666;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #555555;
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.info-section {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-section h3 {
+    margin: 0 0 25px 0;
+    color: #333;
+    font-size: 20px;
+    text-align: center;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.info-item {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.info-icon {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.info-item h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.info-item p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .book-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .book-checkbox {
+        margin-right: 0;
+    }
+    
+    .reservation-actions {
+        flex-direction: column;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[name="book_ids"]');
+    const reserveBtn = document.getElementById('reserveBtn');
+    
+    function updateReserveButton() {
+        const checkedBoxes = document.querySelectorAll('input[name="book_ids"]:checked');
+        if (reserveBtn) {
+            reserveBtn.disabled = checkedBoxes.length === 0;
+        }
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateReserveButton);
+    });
+    
+    
+    const form = document.getElementById('reservationForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const checkedBoxes = document.querySelectorAll('input[name="book_ids"]:checked');
+            if (checkedBoxes.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one book to reserve.');
+                return false;
+            }
+            
+            return confirm(`Are you sure you want to reserve ${checkedBoxes.length} book(s)?`);
+        });
+    }
+});
+</script>
+{% endblock %}
