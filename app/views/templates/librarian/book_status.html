@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Book Status - Librarian Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <div class="container">
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('librarian_dashboard') }}" class="dashboard-logo">
+                    <div class="dashboard-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="dashboard-user">
+                    <div class="user-info">
+                        <div class="user-name">{{ user_name }}</div>
+                        <div class="user-role">Librarian</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <div class="dashboard-content">
+                <div class="breadcrumb">
+                    <a href="{{ url_for('librarian_dashboard') }}">Dashboard</a> > Book Status
+                </div>
+                
+                <section class="content-section">
+                    <h1>Book Status</h1>
+                    <p>Track and monitor book status across the library</p>
+                    
+                    <div class="status-filters">
+                        <button class="filter-btn active">All Books</button>
+                        <button class="filter-btn">Available</button>
+                        <button class="filter-btn">Issued</button>
+                        <button class="filter-btn">Overdue</button>
+                        <button class="filter-btn">Reserved</button>
+                        <button class="filter-btn">Lost</button>
+                    </div>
+                    
+                    <div class="search-section">
+                        <input type="text" placeholder="Search by title, author, or ISBN..." class="search-input">
+                        <select class="filter-select">
+                            <option>All Categories</option>
+                            <option>Fiction</option>
+                            <option>Non-Fiction</option>
+                            <option>Science</option>
+                            <option>History</option>
+                        </select>
+                        <button class="btn btn-primary">Filter</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Book ID</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Status</th>
+                                    <th>Current Holder</th>
+                                    <th>Due Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="text-center">Feature coming soon...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

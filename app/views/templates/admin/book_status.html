@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Book Status - Admin Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">📊 Book Status</h1>
+                    <p class="admin-welcome-subtitle">Monitor book availability, issues, returns, and reservations</p>
+                    <a href="{{ url_for('admin_dashboard') }}" class="admin-welcome-badge">← Back to Dashboard</a>
+                </section>
+
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Book Status Features</h2>
+                    <div class="admin-nav-grid">
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon members">✅</div>
+                            <div class="admin-nav-title">Available Books</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon books">📤</div>
+                            <div class="admin-nav-title">Issued Books</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon status">⏰</div>
+                            <div class="admin-nav-title">Overdue Books</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon fines">📋</div>
+                            <div class="admin-nav-title">Reserved Books</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-stats-grid">
+                    <div class="admin-fines-card">
+                        <h3 class="admin-fines-title">
+                            <div class="admin-fines-icon">📊</div>
+                            Status Overview
+                        </h3>
+                        <div class="admin-fines-amount">Demo Mode</div>
+                        <div class="admin-progress-text">Book status tracking functionality will be implemented here</div>
+                    </div>
+
+                    <div class="admin-notifications">
+                        <h3 class="admin-notifications-title">
+                            <div class="admin-notifications-icon">ℹ️</div>
+                            Demo Information
+                        </h3>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">This is a demo page for Book Status tracking</div>
+                            <div class="admin-notification-time">Features will be added later</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">Real-time book availability and status monitoring</div>
+                            <div class="admin-notification-time">Live updates and reports</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

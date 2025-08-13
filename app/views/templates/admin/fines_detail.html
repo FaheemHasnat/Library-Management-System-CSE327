@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Fines Management - Admin Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">💰 Fines Management</h1>
+                    <p class="admin-welcome-subtitle">Manage overdue fines, payments, and financial reports</p>
+                    <a href="{{ url_for('admin_dashboard') }}" class="admin-welcome-badge">← Back to Dashboard</a>
+                </section>
+
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Fines Management Features</h2>
+                    <div class="admin-nav-grid">
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon members">💵</div>
+                            <div class="admin-nav-title">Collect Fine</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon books">📋</div>
+                            <div class="admin-nav-title">Outstanding Fines</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon status">📈</div>
+                            <div class="admin-nav-title">Financial Reports</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon fines">⚙️</div>
+                            <div class="admin-nav-title">Fine Settings</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-stats-grid">
+                    <div class="admin-fines-card">
+                        <h3 class="admin-fines-title">
+                            <div class="admin-fines-icon">💰</div>
+                            Total Fines Collected
+                        </h3>
+                        <div class="admin-fines-amount">$1,250.75</div>
+                        <div class="admin-progress-bar">
+                            <div class="admin-progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <div class="admin-progress-text">75% of monthly target achieved</div>
+                    </div>
+
+                    <div class="admin-notifications">
+                        <h3 class="admin-notifications-title">
+                            <div class="admin-notifications-icon">ℹ️</div>
+                            Demo Information
+                        </h3>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">This is a demo page for Fines Management</div>
+                            <div class="admin-notification-time">Features will be added later</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">Payment processing and fine calculation system</div>
+                            <div class="admin-notification-time">Automated fine generation</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

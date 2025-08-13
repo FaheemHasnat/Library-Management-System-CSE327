@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Member - Admin Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">🗑️ Delete Member</h1>
+                    <p class="admin-welcome-subtitle">Search and delete member account</p>
+                    <a href="{{ url_for('admin_member_management') }}" class="admin-welcome-badge">← Back to Member Management</a>
+                </section>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% if not member %}
+                <section class="admin-notifications" style="max-width: 600px; margin: 0 auto;">
+                    <h3 class="admin-notifications-title">
+                        <div class="admin-notifications-icon">🔍</div>
+                        Search Member to Delete
+                    </h3>
+                    <form method="POST" class="auth-form">
+                        <div class="form-group-auth">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                class="form-control-auth" 
+                                placeholder="Enter member's email address"
+                                required
+                                value="{{ request.form.email if request.form.email }}"
+                            >
+                        </div>
+
+                        <button type="submit" class="btn-auth">
+                            Find Member
+                        </button>
+                    </form>
+                </section>
+                {% else %}
+                <section class="admin-notifications" style="max-width: 600px; margin: 0 auto;">
+                    <h3 class="admin-notifications-title">
+                        <div class="admin-notifications-icon">⚠️</div>
+                        Confirm Member Deletion
+                    </h3>
+                    
+                    <div class="admin-notification-item">
+                        <div class="admin-notification-text"><strong>Name:</strong> {{ member.Name }}</div>
+                    </div>
+                    <div class="admin-notification-item">
+                        <div class="admin-notification-text"><strong>Email:</strong> {{ member.Email }}</div>
+                    </div>
+                    <div class="admin-notification-item">
+                        <div class="admin-notification-text"><strong>Role:</strong> {{ member.Role }}</div>
+                    </div>
+                    <div class="admin-notification-item">
+                        <div class="admin-notification-text"><strong>User ID:</strong> {{ member.UserID }}</div>
+                    </div>
+
+                    <div style="margin-top: var(--spacing-xl);">
+                        <div class="alert alert-error">
+                            <strong>Warning:</strong> This action cannot be undone. All data associated with this member will be permanently deleted.
+                        </div>
+                    </div>
+
+                    <form method="POST" class="auth-form">
+                        <input type="hidden" name="user_id" value="{{ member.UserID }}">
+                        <input type="hidden" name="action" value="delete">
+                        
+                        <div style="display: flex; gap: var(--spacing-md);">
+                            <button type="submit" class="btn-auth" style="background-color: var(--error-color);" onclick="return confirm('Are you absolutely sure you want to delete this member? This action cannot be undone.')">
+                                🗑️ Delete Member
+                            </button>
+                            
+                            <a href="{{ url_for('admin_delete_member') }}" class="btn-auth" style="background-color: var(--secondary-color); text-decoration: none; display: flex; align-items: center;">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </section>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

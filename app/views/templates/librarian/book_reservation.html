@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Book Reservation - Library Management System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('librarian_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Librarian</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <div class="breadcrumb">
+                    <a href="{{ url_for('librarian_dashboard') }}">Dashboard</a> > Book Reservation
+                </div>
+
+                <div class="content-section">
+                    <h1>Book Reservation</h1>
+                    <p>Select books and assign them to students</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('librarian_book_reservation') }}" id="reservation-form">
+                    <section class="admin-quick-nav">
+                        <h2 class="admin-quick-nav-title">Select Books (Maximum 3)</h2>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Title</th>
+                                        <th>Author</th>
+                                        <th>ISBN</th>
+                                        <th>Subject</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for book in books %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="selected_books" value="{{ book.book_id }}" 
+                                                   class="book-checkbox" onchange="updateSelection()">
+                                        </td>
+                                        <td>{{ book.title }}</td>
+                                        <td>{{ book.author }}</td>
+                                        <td>{{ book.isbn }}</td>
+                                        <td>{{ book.subject }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="selection-info">
+                            <span id="selection-count">0</span> of 3 books selected
+                        </div>
+                    </section>
+
+                    <section class="admin-quick-nav">
+                        <h2 class="admin-quick-nav-title">Select Student</h2>
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label class="form-label">Student</label>
+                                <select name="student_id" class="form-control" required>
+                                    <option value="">Choose a student</option>
+                                    {% for student in students %}
+                                    <option value="{{ student.user_id }}">{{ student.full_name }} ({{ student.email }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button type="submit" class="btn btn-primary" id="confirm-btn" disabled>
+                                    Confirm Reservations
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="clearSelection()">
+                                    Clear Selection
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+
+                {% if reservations %}
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Recent Reservations</h2>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Book Title</th>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reservation in reservations %}
+                                <tr>
+                                    <td>{{ reservation.title }}</td>
+                                    <td>{{ reservation.full_name }}</td>
+                                    <td>{{ reservation.email }}</td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.selection-info {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: var(--background-secondary);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.book-checkbox {
+    transform: scale(1.2);
+    margin: 0;
+}
+
+.book-checkbox:disabled {
+    opacity: 0.5;
+}
+
+#confirm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+function updateSelection() {
+    const checkboxes = document.querySelectorAll('.book-checkbox');
+    const selectedCount = document.querySelectorAll('.book-checkbox:checked').length;
+    const countDisplay = document.getElementById('selection-count');
+    const confirmBtn = document.getElementById('confirm-btn');
+    
+    countDisplay.textContent = selectedCount;
+    
+    checkboxes.forEach(checkbox => {
+        if (!checkbox.checked && selectedCount >= 3) {
+            checkbox.disabled = true;
+        } else {
+            checkbox.disabled = false;
+        }
+    });
+    
+    confirmBtn.disabled = selectedCount === 0;
+}
+
+function clearSelection() {
+    const checkboxes = document.querySelectorAll('.book-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        checkbox.disabled = false;
+    });
+    
+    document.getElementById('selection-count').textContent = '0';
+    document.getElementById('confirm-btn').disabled = true;
+    document.querySelector('select[name="student_id"]').value = '';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Library Management System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    LMS
+                </div>
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to your account to continue</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="auth-form">
+                <div class="form-group-auth">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-control-auth" 
+                        placeholder="Enter your email address"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group-auth">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-control-auth" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p class="text-muted">
+                    Don't have an account? 
+                    <a href="{{ url_for('signup') }}" class="auth-link">Sign up here</a>
+                </p>
+                <p class="text-muted mt-2">
+                    Need help? Contact your 
+                    <a href="#" class="auth-link">system administrator</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

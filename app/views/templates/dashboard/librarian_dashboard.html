@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Librarian Dashboard - Library Management System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('librarian_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Librarian</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">Librarian Dashboard</h1>
+                    <p class="admin-welcome-subtitle">Manage books, issues, and library operations efficiently</p>
+                    <span class="admin-welcome-badge">Librarian Access</span>
+                </section>
+
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Quick Access</h2>
+                    <div class="admin-nav-grid">
+                        <a href="{{ url_for('librarian_book_management') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon books">📚</div>
+                            <div class="admin-nav-title">Book Management</div>
+                        </a>
+                        
+                        <a href="{{ url_for('librarian_book_issue_return') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon status">🔄</div>
+                            <div class="admin-nav-title">Issue & Return</div>
+                        </a>
+                        
+                        <a href="{{ url_for('librarian_book_status') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon status">📊</div>
+                            <div class="admin-nav-title">Book Status</div>
+                        </a>
+                        
+                        <a href="{{ url_for('librarian_fines_management') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon fines">💰</div>
+                            <div class="admin-nav-title">Fines Management</div>
+                        </a>
+
+                        <a href="{{ url_for('librarian_notification_system') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon members">🔔</div>
+                            <div class="admin-nav-title">Notifications</div>
+                        </a>
+
+                        <a href="{{ url_for('librarian_book_reservation') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon status">📋</div>
+                            <div class="admin-nav-title">Book Reservation</div>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="admin-stats-grid">
+                    <div class="admin-fines-card">
+                        <h3 class="admin-fines-title">
+                            <div class="admin-fines-icon">�</div>
+                            Library Statistics
+                        </h3>
+                        <div class="admin-fines-amount">{{ stats.total_books }} Books</div>
+                        <div class="admin-progress-bar">
+                            <div class="admin-progress-fill" style="width: {{ stats.availability_percentage }}%;"></div>
+                        </div>
+                        <div class="admin-progress-text">{{ stats.availability_percentage }}% books available</div>
+                    </div>
+
+                    <div class="admin-notifications">
+                        <h3 class="admin-notifications-title">
+                            <div class="admin-notifications-icon">🔔</div>
+                            Recent Activities
+                        </h3>
+                        {% if activities %}
+                            {% for activity in activities %}
+                            <div class="admin-notification-item">
+                                <div class="admin-notification-text">{{ activity.activity }}</div>
+                                <div class="admin-notification-time">{{ activity.time_ago }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="admin-notification-item">
+                                <div class="admin-notification-text">No recent activities</div>
+                                <div class="admin-notification-time">Today</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Quick Statistics</h2>
+                    <div class="admin-nav-grid">
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon books">📚</div>
+                            <div class="admin-nav-title">{{ stats.available_books }} Available</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon status">📤</div>
+                            <div class="admin-nav-title">{{ stats.issued_books }} Issued</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon fines">⚠️</div>
+                            <div class="admin-nav-title">{{ stats.overdue_books }} Overdue</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon members">📋</div>
+                            <div class="admin-nav-title">{{ stats.reservations }} Reservations</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

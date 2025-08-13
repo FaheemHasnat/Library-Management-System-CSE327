@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Library Management System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">Admin Dashboard</h1>
+                    <p class="admin-welcome-subtitle">Complete control over your library management system</p>
+                    <span class="admin-welcome-badge">Administrator Access</span>
+                </section>
+
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Quick Access</h2>
+                    <div class="admin-nav-grid">
+                        <a href="{{ url_for('admin_member_management') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon members">👥</div>
+                            <div class="admin-nav-title">Member Management</div>
+                        </a>
+                        
+                        <a href="{{ url_for('admin_book_management') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon books">📚</div>
+                            <div class="admin-nav-title">Book Management</div>
+                        </a>
+                        
+                        <a href="{{ url_for('admin_book_status') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon status">📊</div>
+                            <div class="admin-nav-title">Book Status</div>
+                        </a>
+                        
+                        <a href="{{ url_for('admin_fines_detail') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon fines">💰</div>
+                            <div class="admin-nav-title">Fines Management</div>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="admin-stats-grid">
+                    <div class="admin-fines-card">
+                        <h3 class="admin-fines-title">
+                            <div class="admin-fines-icon">💰</div>
+                            Total Fines Collected
+                        </h3>
+                        <div class="admin-fines-amount">$1,250.75</div>
+                        <div class="admin-progress-bar">
+                            <div class="admin-progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <div class="admin-progress-text">75% of target achieved</div>
+                    </div>
+
+                    <div class="admin-notifications">
+                        <h3 class="admin-notifications-title">
+                            <div class="admin-notifications-icon">🔔</div>
+                            Recent Notifications
+                        </h3>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">New member registration pending approval</div>
+                            <div class="admin-notification-time">2 hours ago</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">5 books are overdue and require attention</div>
+                            <div class="admin-notification-time">4 hours ago</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">Monthly library report is ready</div>
+                            <div class="admin-notification-time">1 day ago</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">System backup completed successfully</div>
+                            <div class="admin-notification-time">2 days ago</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

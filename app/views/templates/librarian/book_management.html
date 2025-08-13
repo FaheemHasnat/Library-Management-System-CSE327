@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Book Management - Librarian Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <header class="dashboard-header">
+        <div class="container">
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('librarian_dashboard') }}" class="dashboard-logo">
+                    <div class="dashboard-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="dashboard-user">
+                    <div class="user-info">
+                        <div class="user-name">{{ user_name }}</div>
+                        <div class="user-role">Librarian</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <div class="dashboard-content">
+                <div class="breadcrumb">
+                    <a href="{{ url_for('librarian_dashboard') }}">Dashboard</a> > Book Management
+                </div>
+                
+                <section class="content-section">
+                    <h1>Book Management</h1>
+                    <p>Manage your library's book collection</p>
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-primary">Add New Book</button>
+                        <button class="btn btn-secondary">Import Books</button>
+                        <button class="btn btn-secondary">Export Books</button>
+                    </div>
+                    
+                    <div class="search-section">
+                        <input type="text" placeholder="Search books..." class="search-input">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Book ID</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>ISBN</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="text-center">Feature coming soon...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

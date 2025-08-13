@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Book Management - Admin Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">📚 Book Management</h1>
+                    <p class="admin-welcome-subtitle">Manage library books, inventory, and catalog operations</p>
+                    <a href="{{ url_for('admin_dashboard') }}" class="admin-welcome-badge">← Back to Dashboard</a>
+                </section>
+
+                <section class="admin-quick-nav">
+                    <h2 class="admin-quick-nav-title">Book Management Features</h2>
+                    <div class="admin-nav-grid">
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon members">📖</div>
+                            <div class="admin-nav-title">Add New Book</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon books">📚</div>
+                            <div class="admin-nav-title">View All Books</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon status">✏️</div>
+                            <div class="admin-nav-title">Edit Book Info</div>
+                        </div>
+                        
+                        <div class="admin-nav-item">
+                            <div class="admin-nav-icon fines">🗑️</div>
+                            <div class="admin-nav-title">Remove Book</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-stats-grid">
+                    <div class="admin-fines-card">
+                        <h3 class="admin-fines-title">
+                            <div class="admin-fines-icon">📚</div>
+                            Book Statistics
+                        </h3>
+                        <div class="admin-fines-amount">Demo Mode</div>
+                        <div class="admin-progress-text">Book management functionality will be implemented here</div>
+                    </div>
+
+                    <div class="admin-notifications">
+                        <h3 class="admin-notifications-title">
+                            <div class="admin-notifications-icon">ℹ️</div>
+                            Demo Information
+                        </h3>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">This is a demo page for Book Management</div>
+                            <div class="admin-notification-time">Features will be added later</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">Book catalog, inventory, and search features</div>
+                            <div class="admin-notification-time">Full CRUD operations</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
