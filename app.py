@@ -19,13 +19,9 @@ def create_app(config_name='default'):
     
     from app.controllers.user_controller import user_bp
     from app.controllers.dashboard_controller import dashboard_bp
-    from app.controllers.reservation_controller import reservation_bp
-    from app.controllers.search_controller import search_bp
     
     app.register_blueprint(user_bp)
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(reservation_bp)
-    app.register_blueprint(search_bp)
     
     @app.route('/')
     def index():
