@@ -19,6 +19,10 @@ def create_app(config_name='default'):
     
     from app.controllers.user_controller import user_bp
     from app.controllers.dashboard_controller import dashboard_bp
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     from app.controllers.reservation_controller import reservation_bp
     from app.controllers.search_controller import search_bp
     
@@ -26,6 +30,14 @@ def create_app(config_name='default'):
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(reservation_bp)
     app.register_blueprint(search_bp)
+<<<<<<< HEAD
+=======
+=======
+    
+    app.register_blueprint(user_bp)
+    app.register_blueprint(dashboard_bp)
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     
     @app.route('/')
     def index():

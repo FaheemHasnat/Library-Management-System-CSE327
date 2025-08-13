@@ -45,7 +45,15 @@
         </div>
     </div>
     
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    <!-- Helpful Links -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     {% if current_user.logged_in %}
     <div class="card" style="max-width: 800px; margin: 40px auto 0;">
         <h3 class="text-center mb-20">
@@ -142,14 +150,30 @@
     </div>
     {% endif %}
     
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    <!-- Fun Library Facts -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     <div class="card" style="max-width: 600px; margin: 40px auto 0;">
         <h3 class="text-center mb-20">
             <i class="fas fa-lightbulb text-primary"></i> Did You Know?
         </h3>
         
         <div id="libraryFact" class="text-center" style="font-size: 1.1rem; line-height: 1.6; color: #666;">
+<<<<<<< HEAD
             
+=======
+<<<<<<< HEAD
+            
+=======
+            <!-- Random fact will be loaded here -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
         </div>
         
         <div class="text-center mt-20">
@@ -163,7 +187,15 @@
 
 {% block extra_js %}
 <script>
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    // Array of fun library facts
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     const libraryFacts = [
         "The oldest known library dates back to 2600 BC in ancient Mesopotamia!",
         "The Library of Alexandria was once the largest library in the ancient world.",
@@ -181,7 +213,15 @@
         const randomIndex = Math.floor(Math.random() * libraryFacts.length);
         const factElement = document.getElementById('libraryFact');
         
+<<<<<<< HEAD
         
+=======
+<<<<<<< HEAD
+        
+=======
+        // Add fade out effect
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
         factElement.style.opacity = '0.3';
         
         setTimeout(() => {
@@ -190,15 +230,36 @@
         }, 200);
     }
     
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     
     document.addEventListener('DOMContentLoaded', loadRandomFact);
     
     
+<<<<<<< HEAD
+=======
+=======
+    // Load initial fact when page loads
+    document.addEventListener('DOMContentLoaded', loadRandomFact);
+    
+    // Auto-load new fact every 10 seconds
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     setInterval(loadRandomFact, 10000);
 </script>
 
 <style>
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    /* Custom 404 page styles */
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     .card {
         transition: transform 0.3s ease;
     }

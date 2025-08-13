@@ -13,7 +13,15 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    <!-- Statistics Section -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     {% if statistics %}
     <div class="statistics-section">
         <h2>Reservation Statistics</h2>
@@ -38,7 +46,15 @@
     </div>
     {% endif %}
 
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    <!-- Reservations Management -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     <div class="content-section">
         <div class="section-header">
             <h2>All Reservations</h2>
@@ -124,7 +140,15 @@
                 </table>
             </div>
 
+<<<<<<< HEAD
             
+=======
+<<<<<<< HEAD
+            
+=======
+            <!-- Pagination would go here if needed -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
             <div class="table-footer">
                 <div class="results-info">
                     Showing {{ reservations|length }} reservations
@@ -139,7 +163,15 @@
         {% endif %}
     </div>
 
+<<<<<<< HEAD
     
+=======
+<<<<<<< HEAD
+    
+=======
+    <!-- Quick Actions -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
     <div class="quick-actions">
         <h3>Quick Actions</h3>
         <div class="action-grid">
@@ -159,7 +191,15 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+<!-- Queue Modal -->
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
 <div id="queueModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -542,7 +582,15 @@
 </style>
 
 <script>
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+// Filter functionality
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
 document.addEventListener('DOMContentLoaded', function() {
     const statusFilter = document.getElementById('statusFilter');
     const searchInput = document.getElementById('searchInput');
@@ -571,7 +619,15 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.addEventListener('input', filterTable);
 });
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+// Modal functions
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
 function viewQueue(bookId) {
     document.getElementById('queueModal').style.display = 'block';
     
@@ -610,7 +666,15 @@ function contactUser(userId) {
 
 function cancelReservation(reservationId) {
     if (confirm('Are you sure you want to cancel this reservation?')) {
+<<<<<<< HEAD
         
+=======
+<<<<<<< HEAD
+        
+=======
+        // Implementation would go here
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
         alert('Reservation cancellation - This feature will be implemented later.');
     }
 }
@@ -627,7 +691,15 @@ function viewStatistics() {
     alert('View detailed statistics - This feature will be implemented later.');
 }
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+// Close modal when clicking outside
+>>>>>>> fc25a9493b7ee3c6b8bbf27d715e8cfdebbc906c
+>>>>>>> b33be7ddca7312678507e52c0ced05f27ee08231
 window.onclick = function(event) {
     const modal = document.getElementById('queueModal');
     if (event.target === modal) {

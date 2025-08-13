@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Library Management System{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-form">
+            <h2 class="auth-title">SIGN IN</h2>
+            
+            <form method="POST" action="{{ url_for('user.login') }}">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        placeholder="ENTER YOUR EMAIL"
+                        required
+                        value="{{ request.form.email if request.form.email else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="ENTER YOUR PASSWORD"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i> SIGN IN
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="auth-side-panel">
+            <div>
+                <h3 style="font-size: 1.8rem; margin-bottom: 20px;">
+                    <i class="fas fa-book"></i><br>
+                    Welcome to Library Management System
+                </h3>
+                
+                <div style="margin-top: 40px;">
+                    <h4 style="margin-bottom: 15px;">New to our library?</h4>
+                    <p style="margin-bottom: 20px;">Create an account to get started</p>
+                    <a href="{{ url_for('user.signup') }}" class="btn btn-secondary">
+                        CREATE ACCOUNT
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
