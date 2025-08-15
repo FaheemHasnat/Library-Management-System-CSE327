@@ -85,6 +85,10 @@ def librarian_book_issue():
 def librarian_book_return():
     return LibrarianController.book_return()
 
+@app.route('/librarian/transaction-history')
+def librarian_transaction_history():
+    return LibrarianController.transaction_history()
+
 @app.route('/librarian/book-issue-return')
 def librarian_book_issue_return():
     return LibrarianController.book_issue_return()

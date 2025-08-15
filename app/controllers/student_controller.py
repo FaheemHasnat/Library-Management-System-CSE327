@@ -1,5 +1,6 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app.models.book import Book
+from app.models.issued_book import IssuedBook
 
 
 class StudentController:
@@ -9,12 +10,14 @@ class StudentController:
             flash('Access denied', 'error')
             return redirect(url_for('login'))
         
-        user_reservation_count = Book.get_user_reservation_count(session.get('user_id'))
+        user_id = session.get('user_id')
+        user_reservation_count = Book.get_user_reservation_count(user_id)
+        student_fines = IssuedBook.get_student_fines(user_id)
         
         dummy_stats = {
             'issued_books': 3,
             'available_books': 1247,
-            'pending_fines': 25.50,
+            'pending_fines': student_fines,
             'reservations': user_reservation_count
         }
         
@@ -87,22 +90,30 @@ class StudentController:
             flash('Access denied', 'error')
             return redirect(url_for('login'))
         
+        user_id = session.get('user_id')
+        total_fines = IssuedBook.get_student_fines(user_id)
+        fine_history = IssuedBook.get_student_fine_history(user_id)
+        
+        formatted_fine_history = []
+        for record in fine_history:
+            formatted_fine_history.append({
+                'description': f'Late return - {record["book_title"]}',
+                'amount': record['Fine'],
+                'date': record['ReturnDate'].strftime('%Y-%m-%d') if record['ReturnDate'] else 'N/A',
+                'status': 'Pending'
+            })
+        
         dummy_account = {
-            'total_fines': 25.50,
-            'paid_fines': 10.00,
-            'pending_fines': 15.50,
+            'total_fines': total_fines,
+            'paid_fines': 0.00,
+            'pending_fines': total_fines,
             'account_status': 'Active'
         }
-        
-        dummy_fine_history = [
-            {'description': 'Late return - Python Programming', 'amount': 15.50, 'date': '2025-08-10', 'status': 'Pending'},
-            {'description': 'Late return - Java Fundamentals', 'amount': 10.00, 'date': '2025-08-05', 'status': 'Paid'}
-        ]
         
         return render_template('student/account_status.html', 
                              user_name=session.get('user_name'),
                              account=dummy_account,
-                             fine_history=dummy_fine_history)
+                             fine_history=formatted_fine_history)
     
     @staticmethod
     def your_books():

@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app.models.book import Book
 from app.models.issued_book import IssuedBook
+from datetime import datetime
 
 
 class LibrarianController:
@@ -65,28 +66,44 @@ class LibrarianController:
             return redirect(url_for('login'))
         
         if request.method == 'POST':
-            student_email = request.form.get('student_email')
+            user_id = request.form.get('user_id')
             book_id = request.form.get('book_id')
+            return_date = request.form.get('return_date')
             
-            if not student_email or not book_id:
-                flash('Please provide both student email and book ID', 'error')
+            if not user_id or not book_id or not return_date:
+                flash('Please provide user ID, book ID and return date', 'error')
             else:
-                user = Book.get_user_by_email(student_email)
-                if not user:
-                    flash('Student not found', 'error')
-                else:
-                    if IssuedBook.return_book(user['user_id'], book_id):
-                        flash('Book returned successfully', 'success')
+                result = IssuedBook.return_book(user_id, book_id, return_date)
+                if result and isinstance(result, dict) and result.get('success'):
+                    fine_amount = result.get('fine', 0)
+                    if fine_amount > 0:
+                        flash(f'Book returned successfully. Fine: {fine_amount} Taka for late return', 'warning')
                     else:
-                        flash('Failed to return book. Please check if the book was issued to this student', 'error')
+                        flash('Book returned successfully', 'success')
+                else:
+                    flash('Failed to return book. Please check if the book was issued to this student', 'error')
             
             return redirect(url_for('librarian_book_return'))
         
         issued_books = IssuedBook.get_all_issued_books()
+        today = datetime.now().date()
         
         return render_template('librarian/book_return.html', 
                              user_name=session.get('user_name'),
-                             issued_books=issued_books)
+                             issued_books=issued_books,
+                             today=today)
+    
+    @staticmethod
+    def transaction_history():
+        if 'user_id' not in session or session.get('user_role') != 'Librarian':
+            flash('Access denied', 'error')
+            return redirect(url_for('login'))
+        
+        transactions = IssuedBook.get_transaction_history()
+        
+        return render_template('librarian/transaction_history.html',
+                             user_name=session.get('user_name'),
+                             transactions=transactions)
     
     @staticmethod
     def book_issue_return():
@@ -122,7 +139,13 @@ class LibrarianController:
             flash('Access denied', 'error')
             return redirect(url_for('login'))
         
-        return render_template('librarian/fines_management.html', user_name=session.get('user_name'))
+        users_with_fines = IssuedBook.get_users_with_fines()
+        fines_summary = IssuedBook.get_fines_summary()
+        
+        return render_template('librarian/fines_management.html', 
+                             user_name=session.get('user_name'),
+                             users_with_fines=users_with_fines,
+                             fines_summary=fines_summary)
     
     @staticmethod
     def book_reservation():
