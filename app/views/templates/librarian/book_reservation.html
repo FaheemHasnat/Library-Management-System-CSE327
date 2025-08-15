@@ -37,6 +37,9 @@
                 <div class="content-section">
                     <h1>Book Reservation</h1>
                     <p>Select books and assign them to students</p>
+                    <a href="{{ url_for('librarian_dashboard') }}" class="btn btn-outline" style="margin-bottom: 1.5rem;">
+                        ← Back to Dashboard
+                    </a>
                 </div>
 
                 {% with messages = get_flashed_messages(with_categories=true) %}

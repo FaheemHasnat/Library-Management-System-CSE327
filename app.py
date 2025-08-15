@@ -3,6 +3,7 @@ from config import Config
 from app.controllers.auth_controller import AuthController
 from app.controllers.admin_controller import AdminController
 from app.controllers.librarian_controller import LibrarianController
+from app.controllers.student_controller import StudentController
 
 app = Flask(__name__, template_folder='app/views/templates', static_folder='app/views/static')
 app.config.from_object(Config)
@@ -76,6 +77,14 @@ def librarian_dashboard():
 def librarian_book_management():
     return LibrarianController.book_management()
 
+@app.route('/librarian/book-issue', methods=['GET', 'POST'])
+def librarian_book_issue():
+    return LibrarianController.book_issue()
+
+@app.route('/librarian/book-return', methods=['GET', 'POST'])
+def librarian_book_return():
+    return LibrarianController.book_return()
+
 @app.route('/librarian/book-issue-return')
 def librarian_book_issue_return():
     return LibrarianController.book_issue_return()
@@ -98,7 +107,23 @@ def librarian_book_reservation():
 
 @app.route('/student/dashboard')
 def student_dashboard():
-    return AuthController.student_dashboard()
+    return StudentController.student_dashboard()
+
+@app.route('/student/book-status')
+def student_book_status():
+    return StudentController.book_status()
+
+@app.route('/student/book-reservation', methods=['GET', 'POST'])
+def student_book_reservation():
+    return StudentController.book_reservation()
+
+@app.route('/student/account-status')
+def student_account_status():
+    return StudentController.account_status()
+
+@app.route('/student/your-books')
+def student_your_books():
+    return StudentController.your_books()
 
 if __name__ == '__main__':
     app.run(debug=True)

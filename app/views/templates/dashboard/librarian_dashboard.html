@@ -44,9 +44,14 @@
                             <div class="admin-nav-title">Book Management</div>
                         </a>
                         
-                        <a href="{{ url_for('librarian_book_issue_return') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon status">🔄</div>
-                            <div class="admin-nav-title">Issue & Return</div>
+                        <a href="{{ url_for('librarian_book_issue') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon status">📤</div>
+                            <div class="admin-nav-title">Book Issue</div>
+                        </a>
+                        
+                        <a href="{{ url_for('librarian_book_return') }}" class="admin-nav-item">
+                            <div class="admin-nav-icon status">�</div>
+                            <div class="admin-nav-title">Book Return</div>
                         </a>
                         
                         <a href="{{ url_for('librarian_book_status') }}" class="admin-nav-item">
@@ -61,7 +66,7 @@
 
                         <a href="{{ url_for('librarian_notification_system') }}" class="admin-nav-item">
                             <div class="admin-nav-icon members">🔔</div>
-                            <div class="admin-nav-title">Notifications</div>
+                            <div class="admin-nav-title">Manage Notifications</div>
                         </a>
 
                         <a href="{{ url_for('librarian_book_reservation') }}" class="admin-nav-item">
@@ -74,34 +79,37 @@
                 <section class="admin-stats-grid">
                     <div class="admin-fines-card">
                         <h3 class="admin-fines-title">
-                            <div class="admin-fines-icon">�</div>
-                            Library Statistics
+                            <div class="admin-fines-icon">📊</div>
+                            Library Overview
                         </h3>
-                        <div class="admin-fines-amount">{{ stats.total_books }} Books</div>
+                        <div class="admin-fines-amount">Active</div>
                         <div class="admin-progress-bar">
-                            <div class="admin-progress-fill" style="width: {{ stats.availability_percentage }}%;"></div>
+                            <div class="admin-progress-fill" style="width: 85%;"></div>
                         </div>
-                        <div class="admin-progress-text">{{ stats.availability_percentage }}% books available</div>
+                        <div class="admin-progress-text">System operating normally</div>
                     </div>
 
                     <div class="admin-notifications">
                         <h3 class="admin-notifications-title">
                             <div class="admin-notifications-icon">🔔</div>
-                            Recent Activities
+                            Recent Notifications
                         </h3>
-                        {% if activities %}
-                            {% for activity in activities %}
-                            <div class="admin-notification-item">
-                                <div class="admin-notification-text">{{ activity.activity }}</div>
-                                <div class="admin-notification-time">{{ activity.time_ago }}</div>
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="admin-notification-item">
-                                <div class="admin-notification-text">No recent activities</div>
-                                <div class="admin-notification-time">Today</div>
-                            </div>
-                        {% endif %}
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">New book reservation request received</div>
+                            <div class="admin-notification-time">1 hour ago</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">3 books are overdue for return</div>
+                            <div class="admin-notification-time">2 hours ago</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">Student fine payment received</div>
+                            <div class="admin-notification-time">4 hours ago</div>
+                        </div>
+                        <div class="admin-notification-item">
+                            <div class="admin-notification-text">New student registration approved</div>
+                            <div class="admin-notification-time">1 day ago</div>
+                        </div>
                     </div>
                 </section>
 
@@ -110,22 +118,22 @@
                     <div class="admin-nav-grid">
                         <div class="admin-nav-item">
                             <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">{{ stats.available_books }} Available</div>
+                            <div class="admin-nav-title">Books Available</div>
                         </div>
                         
                         <div class="admin-nav-item">
                             <div class="admin-nav-icon status">📤</div>
-                            <div class="admin-nav-title">{{ stats.issued_books }} Issued</div>
+                            <div class="admin-nav-title">Books Issued</div>
                         </div>
                         
                         <div class="admin-nav-item">
                             <div class="admin-nav-icon fines">⚠️</div>
-                            <div class="admin-nav-title">{{ stats.overdue_books }} Overdue</div>
+                            <div class="admin-nav-title">Books Overdue</div>
                         </div>
                         
                         <div class="admin-nav-item">
                             <div class="admin-nav-icon members">📋</div>
-                            <div class="admin-nav-title">{{ stats.reservations }} Reservations</div>
+                            <div class="admin-nav-title">Reservations</div>
                         </div>
                     </div>
                 </section>

@@ -2,80 +2,119 @@
 
 {% block title %}Book Status - Librarian Dashboard{% endblock %}
 
-{% block head %}
+{% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-wrapper">
-    <header class="dashboard-header">
+<div class="admin-wrapper">
+    <header class="admin-header">
         <div class="container">
-            <nav class="dashboard-nav">
-                <a href="{{ url_for('librarian_dashboard') }}" class="dashboard-logo">
-                    <div class="dashboard-logo-icon">LMS</div>
+            <nav class="admin-nav">
+                <a href="{{ url_for('librarian_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
                     Library Management System
                 </a>
                 
-                <div class="dashboard-user">
-                    <div class="user-info">
-                        <div class="user-name">{{ user_name }}</div>
-                        <div class="user-role">Librarian</div>
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Librarian</div>
                     </div>
-                    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
                 </div>
             </nav>
         </div>
     </header>
 
-    <main class="dashboard-main">
+    <main class="admin-main">
         <div class="container">
-            <div class="dashboard-content">
-                <div class="breadcrumb">
-                    <a href="{{ url_for('librarian_dashboard') }}">Dashboard</a> > Book Status
-                </div>
-                
-                <section class="content-section">
-                    <h1>Book Status</h1>
-                    <p>Track and monitor book status across the library</p>
-                    
-                    <div class="status-filters">
-                        <button class="filter-btn active">All Books</button>
-                        <button class="filter-btn">Available</button>
-                        <button class="filter-btn">Issued</button>
-                        <button class="filter-btn">Overdue</button>
-                        <button class="filter-btn">Reserved</button>
-                        <button class="filter-btn">Lost</button>
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">📚 Book Status Management</h1>
+                    <p class="admin-welcome-subtitle">Monitor and manage all books in the library collection</p>
+                    <a href="{{ url_for('librarian_dashboard') }}" class="admin-welcome-badge">← Back to Dashboard</a>
+                </section>
+
+                <section class="admin-table-section">
+                    <div class="table-stats">
+                        <div class="table-stat-item">
+                            <div class="table-stat-icon">📖</div>
+                            <div>
+                                <div class="table-stat-value">{{ books|length }}</div>
+                                <div class="table-stat-label">Total Books</div>
+                            </div>
+                        </div>
+                        <div class="table-stat-item">
+                            <div class="table-stat-icon">✅</div>
+                            <div>
+                                <div class="table-stat-value">{{ books|selectattr('status', 'equalto', 'Available')|list|length }}</div>
+                                <div class="table-stat-label">Available</div>
+                            </div>
+                        </div>
+                        <div class="table-stat-item">
+                            <div class="table-stat-icon">📤</div>
+                            <div>
+                                <div class="table-stat-value">{{ (books|selectattr('status', 'equalto', 'Issued')|list|length) + (books|selectattr('status', 'equalto', 'Borrowed')|list|length) }}</div>
+                                <div class="table-stat-label">Issued</div>
+                            </div>
+                        </div>
+                        <div class="table-stat-item">
+                            <div class="table-stat-icon">📋</div>
+                            <div>
+                                <div class="table-stat-value">{{ books|selectattr('status', 'equalto', 'Reserved')|list|length }}</div>
+                                <div class="table-stat-label">Reserved</div>
+                            </div>
+                        </div>
+                        <div class="table-stat-item">
+                            <div class="table-stat-icon">📊</div>
+                            <div>
+                                <div class="table-stat-value">{{ (books|selectattr('status', 'equalto', 'Available')|list|length / books|length * 100)|round|int }}%</div>
+                                <div class="table-stat-label">Availability</div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="search-section">
-                        <input type="text" placeholder="Search by title, author, or ISBN..." class="search-input">
-                        <select class="filter-select">
-                            <option>All Categories</option>
-                            <option>Fiction</option>
-                            <option>Non-Fiction</option>
-                            <option>Science</option>
-                            <option>History</option>
+
+                    <div class="table-search-section">
+                        <select class="table-search-input" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Issued,Borrowed">Issued</option>
+                            <option value="Reserved">Reserved</option>
                         </select>
-                        <button class="btn btn-primary">Filter</button>
+                        <button class="admin-btn-primary" onclick="filterByStatus()">Filter</button>
+                        <button class="admin-btn-secondary" onclick="resetFilter()">Reset</button>
                     </div>
+
+                    <h2 class="admin-table-title">
+                        📋 Complete Book Inventory
+                    </h2>
                     
-                    <div class="table-container">
-                        <table class="data-table">
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>Book ID</th>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Status</th>
-                                    <th>Current Holder</th>
-                                    <th>Due Date</th>
-                                    <th>Actions</th>
+                                    <th>📖 Book Title</th>
+                                    <th>✍️ Author</th>
+                                    <th>📚 Subject</th>
+                                    <th>🔢 ISBN</th>
+                                    <th>🏷️ Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="7" class="text-center">Feature coming soon...</td>
+                            <tbody id="bookTableBody">
+                                {% for book in books %}
+                                <tr data-status="{{ book.status }}">
+                                    <td>{{ book.title }}</td>
+                                    <td>{{ book.author }}</td>
+                                    <td>{{ book.subject }}</td>
+                                    <td>{{ book.isbn }}</td>
+                                    <td>
+                                        <span class="status-badge {{ 'available' if book.status == 'Available' else ('issued' if book.status in ['Issued', 'Borrowed'] else 'reserved') }}">
+                                            {{ 'Issued' if book.status == 'Borrowed' else book.status }}
+                                        </span>
+                                    </td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -84,4 +123,35 @@
         </div>
     </main>
 </div>
+
+<script>
+function filterByStatus() {
+    const filter = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#bookTableBody tr');
+    
+    rows.forEach(row => {
+        if (filter === '') {
+            row.style.display = '';
+        } else {
+            const allowedStatuses = filter.split(',');
+            const rowStatus = row.dataset.status;
+            
+            if (allowedStatuses.includes(rowStatus)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+}
+
+function resetFilter() {
+    document.getElementById('statusFilter').value = '';
+    const rows = document.querySelectorAll('#bookTableBody tr');
+    rows.forEach(row => {
+        row.style.display = '';
+    });
+}
+</script>
+
 {% endblock %}

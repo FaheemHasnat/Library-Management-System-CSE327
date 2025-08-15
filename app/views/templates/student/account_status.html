@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Account Status - Student Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <header class="admin-header">
+        <div class="container">
+            <nav class="admin-nav">
+                <a href="{{ url_for('student_dashboard') }}" class="admin-logo">
+                    <div class="admin-logo-icon">LMS</div>
+                    Library Management System
+                </a>
+                
+                <div class="admin-user">
+                    <div class="admin-user-info">
+                        <div class="admin-user-name">{{ user_name }}</div>
+                        <div class="admin-user-role">Student</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="admin-logout-btn">Logout</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-content">
+                <section class="admin-welcome">
+                    <h1 class="admin-welcome-title">Account Status</h1>
+                    <p class="admin-welcome-subtitle">View your account balance and fine details</p>
+                    <a href="{{ url_for('student_dashboard') }}" class="admin-welcome-badge">← Back to Dashboard</a>
+                </section>
+
+                <section class="admin-stats-grid">
+                    <div class="admin-fines-card">
+                        <h3 class="admin-fines-title">
+                            <div class="admin-fines-icon">💰</div>
+                            Account Summary
+                        </h3>
+                        <div class="admin-fines-amount">${{ "%.2f"|format(account.pending_fines) }}</div>
+                        <div class="admin-progress-bar">
+                            <div class="admin-progress-fill" style="width: 70%;"></div>
+                        </div>
+                        <div class="admin-progress-text">{{ account.account_status }}</div>
+                    </div>
+
+                    <div class="admin-quick-nav">
+                        <h3 class="admin-quick-nav-title">Fine Breakdown</h3>
+                        <div class="admin-nav-grid">
+                            <div class="admin-nav-item">
+                                <div class="admin-nav-icon fines">💵</div>
+                                <div class="admin-nav-title">${{ "%.2f"|format(account.total_fines) }} Total</div>
+                            </div>
+                            
+                            <div class="admin-nav-item">
+                                <div class="admin-nav-icon status">✅</div>
+                                <div class="admin-nav-title">${{ "%.2f"|format(account.paid_fines) }} Paid</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-table-section">
+                    <h2 class="admin-table-title">Fine History</h2>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fine in fine_history %}
+                                <tr>
+                                    <td>{{ fine.description }}</td>
+                                    <td>${{ "%.2f"|format(fine.amount) }}</td>
+                                    <td>{{ fine.date }}</td>
+                                    <td>
+                                        <span class="status-badge {{ 'pending' if fine.status == 'Pending' else 'paid' }}">
+                                            {{ fine.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

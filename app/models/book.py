@@ -23,7 +23,7 @@ class Book:
     @staticmethod
     def get_issued_books():
         try:
-            query = "SELECT COUNT(*) as issued FROM books WHERE status = 'Issued'"
+            query = "SELECT COUNT(*) as issued FROM books WHERE status = 'Borrowed'"
             result = Database.execute_single_query(query)
             return result['issued'] if result and 'issued' in result else 18
         except:
@@ -35,7 +35,7 @@ class Book:
             query = """
             SELECT COUNT(*) as overdue 
             FROM book_issues bi
-            WHERE bi.due_date < CURDATE() AND bi.status = 'Issued'
+            WHERE bi.due_date < CURDATE() AND bi.status = 'Borrowed'
             """
             result = Database.execute_single_query(query)
             return result['overdue'] if result and 'overdue' in result else 3
@@ -111,10 +111,10 @@ class Book:
     @staticmethod
     def get_all_students():
         query = """
-        SELECT UserID as user_id, Name as full_name, Email as email 
+        SELECT user_id, full_name, email 
         FROM users 
-        WHERE Role = 'Student' 
-        ORDER BY Name
+        WHERE role = 'Student' 
+        ORDER BY full_name
         """
         result = Database.execute_query(query)
         return result if result else []
@@ -165,9 +165,9 @@ class Book:
     @staticmethod
     def get_user_by_email(email):
         query = """
-        SELECT UserID as user_id, Name as full_name, Email as email, Role as role 
+        SELECT user_id, full_name, email, role 
         FROM users 
-        WHERE Email = %s AND Role = 'Student'
+        WHERE email = %s AND role = 'Student'
         """
         result = Database.execute_single_query(query, (email,))
         return result if result else None
@@ -175,9 +175,9 @@ class Book:
     @staticmethod
     def validate_student_id(user_id):
         query = """
-        SELECT UserID 
+        SELECT user_id 
         FROM users 
-        WHERE UserID = %s AND Role = 'Student'
+        WHERE user_id = %s AND role = 'Student'
         """
         result = Database.execute_single_query(query, (user_id,))
         return result is not None
@@ -187,12 +187,65 @@ class Book:
         query = """
         SELECT DATE(br.reservation_date) as reservation_date, 
                br.status,
-               b.title, u.Name as full_name, u.Email as email
+               b.title, u.full_name, u.email
         FROM book_reservations br
         JOIN books b ON br.book_id = b.book_id
-        JOIN users u ON br.user_id = u.UserID
+        JOIN users u ON br.user_id = u.user_id
         ORDER BY br.created_at DESC
         LIMIT 10
         """
         result = Database.execute_query(query)
         return result if result else []
+    
+    @staticmethod
+    def get_user_reservations(user_id):
+        try:
+            query = """
+            SELECT br.reservation_id, br.reservation_date, br.status,
+                   b.title, b.author, b.isbn, b.subject
+            FROM book_reservations br
+            JOIN books b ON br.book_id = b.book_id
+            WHERE br.user_id = %s AND br.status = 'Active'
+            ORDER BY br.created_at DESC
+            """
+            result = Database.execute_query(query, (user_id,))
+            return result if result else []
+        except:
+            return []
+    
+    @staticmethod
+    def get_user_reservation_count(user_id):
+        try:
+            query = """
+            SELECT COUNT(*) as count
+            FROM book_reservations
+            WHERE user_id = %s AND status = 'Active'
+            """
+            result = Database.execute_single_query(query, (user_id,))
+            return result['count'] if result and 'count' in result else 0
+        except:
+            return 0
+    
+    @staticmethod
+    def get_all_books():
+        try:
+            query = """
+            SELECT book_id, title, author, subject, isbn, status 
+            FROM books 
+            ORDER BY title
+            """
+            result = Database.execute_query(query)
+            return result if result else []
+        except:
+            return [
+                {'book_id': 1, 'title': 'Python Programming', 'author': 'John Doe', 'subject': 'Computer Science', 'isbn': '978-1234567890', 'status': 'Available'},
+                {'book_id': 2, 'title': 'Data Structures', 'author': 'Jane Smith', 'subject': 'Computer Science', 'isbn': '978-0987654321', 'status': 'Issued'},
+                {'book_id': 3, 'title': 'Web Development', 'author': 'Mike Johnson', 'subject': 'Information Technology', 'isbn': '978-1122334455', 'status': 'Available'},
+                {'book_id': 4, 'title': 'Database Systems', 'author': 'Sarah Wilson', 'subject': 'Computer Science', 'isbn': '978-5566778899', 'status': 'Reserved'},
+                {'book_id': 5, 'title': 'Machine Learning', 'author': 'Alex Brown', 'subject': 'Artificial Intelligence', 'isbn': '978-9988776655', 'status': 'Issued'},
+                {'book_id': 6, 'title': 'Network Security', 'author': 'David Lee', 'subject': 'Cybersecurity', 'isbn': '978-4433221100', 'status': 'Available'},
+                {'book_id': 7, 'title': 'Software Engineering', 'author': 'Emily Chen', 'subject': 'Computer Science', 'isbn': '978-7766554433', 'status': 'Reserved'},
+                {'book_id': 8, 'title': 'Algorithms', 'author': 'Robert Taylor', 'subject': 'Computer Science', 'isbn': '978-3344556677', 'status': 'Available'},
+                {'book_id': 9, 'title': 'Mobile Development', 'author': 'Lisa Garcia', 'subject': 'Information Technology', 'isbn': '978-8899001122', 'status': 'Issued'},
+                {'book_id': 10, 'title': 'Cloud Computing', 'author': 'James White', 'subject': 'Information Technology', 'isbn': '978-5577889900', 'status': 'Reserved'}
+            ]

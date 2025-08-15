@@ -1,5 +1,6 @@
 from flask import render_template, session, redirect, url_for, flash, request
 from app.models.user import User
+from app.models.book import Book
 from app.utils.database import Database
 
 class AdminController:
@@ -288,7 +289,11 @@ class AdminController:
         if access_check:
             return access_check
         
-        return render_template('admin/book_status.html', user_name=session.get('user_name'))
+        books = Book.get_all_books()
+        
+        return render_template('admin/book_status.html', 
+                             user_name=session.get('user_name'),
+                             books=books)
     
     @staticmethod
     def fines_detail():

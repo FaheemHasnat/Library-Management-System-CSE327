@@ -100,11 +100,3 @@ class AuthController:
             return redirect(url_for('login'))
         
         return render_template('dashboard/admin_dashboard.html', user_name=session.get('user_name'))
-    
-    @staticmethod
-    def student_dashboard():
-        if 'user_id' not in session or session.get('user_role') != 'Student':
-            flash('Access denied', 'error')
-            return redirect(url_for('login'))
-        
-        return render_template('dashboard/student_dashboard.html', user_name=session.get('user_name'))
