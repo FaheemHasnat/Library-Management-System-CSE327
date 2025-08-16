@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
-import hashlib
 from config import Config
+
 
 class Database:
     @staticmethod

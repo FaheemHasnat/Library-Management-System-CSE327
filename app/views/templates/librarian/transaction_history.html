@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History - Library Management System{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Transaction History</h1>
+        <p>Welcome, {{ user_name }}</p>
+    </header>
+
+    <div class="content-area">
+        <div class="page-header">
+            <h2>Book Transaction History</h2>
+            <p>Complete history of book returns and fines</p>
+        </div>
+
+        <div class="transactions-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Student</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Fine Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.TransactionID }}</td>
+                        <td>{{ transaction.student_name }}</td>
+                        <td>{{ transaction.book_title }}</td>
+                        <td>{{ transaction.book_author }}</td>
+                        <td>{{ transaction.IssueDate }}</td>
+                        <td>{{ transaction.DueDate }}</td>
+                        <td>{{ transaction.ReturnDate }}</td>
+                        <td>${{ "%.2f"|format(transaction.Fine) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8">No transaction history available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="navigation-buttons">
+            <a href="{{ url_for('librarian_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

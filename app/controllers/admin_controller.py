@@ -58,7 +58,7 @@ class AdminController:
                 flash('Please fill in all fields', 'error')
                 return render_template('admin/add_member.html', user_name=session.get('user_name'))
             
-            if role not in ['Student', 'Librarian', 'Admin']:
+            if role not in ['Student', 'Librarian']:
                 flash('Invalid role selected', 'error')
                 return render_template('admin/add_member.html', user_name=session.get('user_name'))
             
@@ -170,7 +170,7 @@ class AdminController:
                                      user_name=session.get('user_name'),
                                      member=member)
             
-            if role not in ['Student', 'Librarian', 'Admin']:
+            if role not in ['Student', 'Librarian']:
                 flash('Invalid role selected', 'error')
                 return render_template('admin/edit_member.html', 
                                      user_name=session.get('user_name'),
@@ -281,7 +281,67 @@ class AdminController:
         if access_check:
             return access_check
         
-        return render_template('admin/book_management.html', user_name=session.get('user_name'))
+        subject_filter = request.args.get('subject', 'all')
+        sort_by = request.args.get('sort', 'title')
+        
+        if request.method == 'POST':
+            action = request.form.get('action')
+            
+            if action == 'add':
+                title = request.form.get('title')
+                author = request.form.get('author')
+                subject = request.form.get('subject')
+                isbn = request.form.get('isbn')
+                
+                if all([title, author, subject, isbn]):
+                    if Book.add_book(title, author, subject, isbn):
+                        flash('Book added successfully!', 'success')
+                    else:
+                        flash('Error adding book. Please try again.', 'error')
+                else:
+                    flash('Please fill in all fields', 'error')
+                
+                return redirect(url_for('admin_book_management'))
+            
+            elif action == 'delete':
+                book_id = request.form.get('book_id')
+                result = Book.delete_book(book_id)
+                
+                if result == True:
+                    flash('Book deleted successfully!', 'success')
+                elif result == "borrowed":
+                    flash('Cannot delete book - it is currently borrowed', 'error')
+                else:
+                    flash('Error deleting book. Please try again.', 'error')
+                
+                return redirect(url_for('admin_book_management'))
+            
+            elif action == 'edit':
+                book_id = request.form.get('book_id')
+                title = request.form.get('title')
+                author = request.form.get('author')
+                subject = request.form.get('subject')
+                isbn = request.form.get('isbn')
+                
+                if all([book_id, title, author, subject, isbn]):
+                    if Book.update_book(book_id, title, author, subject, isbn):
+                        flash('Book updated successfully!', 'success')
+                    else:
+                        flash('Error updating book. Please try again.', 'error')
+                else:
+                    flash('Please fill in all fields', 'error')
+                
+                return redirect(url_for('admin_book_management'))
+        
+        books = Book.get_all_books_with_filter(subject_filter, sort_by)
+        subjects = Book.get_all_subjects()
+        
+        return render_template('admin/book_management.html', 
+                             user_name=session.get('user_name'),
+                             books=books,
+                             subjects=subjects,
+                             current_subject=subject_filter,
+                             current_sort=sort_by)
     
     @staticmethod
     def book_status():

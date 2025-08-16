@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, session, flash
 from app.models.book import Book
 from app.models.issued_book import IssuedBook
+from app.utils.database import Database
 from datetime import datetime
 
 
@@ -20,7 +21,67 @@ class LibrarianController:
             flash('Access denied', 'error')
             return redirect(url_for('login'))
         
-        return render_template('librarian/book_management.html', user_name=session.get('user_name'))
+        subject_filter = request.args.get('subject', 'all')
+        sort_by = request.args.get('sort', 'title')
+        
+        if request.method == 'POST':
+            action = request.form.get('action')
+            
+            if action == 'add':
+                title = request.form.get('title')
+                author = request.form.get('author')
+                subject = request.form.get('subject')
+                isbn = request.form.get('isbn')
+                
+                if all([title, author, subject, isbn]):
+                    if Book.add_book(title, author, subject, isbn):
+                        flash('Book added successfully!', 'success')
+                    else:
+                        flash('Error adding book. Please try again.', 'error')
+                else:
+                    flash('Please fill in all fields', 'error')
+                
+                return redirect(url_for('librarian_book_management'))
+            
+            elif action == 'delete':
+                book_id = request.form.get('book_id')
+                result = Book.delete_book(book_id)
+                
+                if result == True:
+                    flash('Book deleted successfully!', 'success')
+                elif result == "borrowed":
+                    flash('Cannot delete book - it is currently borrowed', 'error')
+                else:
+                    flash('Error deleting book. Please try again.', 'error')
+                
+                return redirect(url_for('librarian_book_management'))
+            
+            elif action == 'edit':
+                book_id = request.form.get('book_id')
+                title = request.form.get('title')
+                author = request.form.get('author')
+                subject = request.form.get('subject')
+                isbn = request.form.get('isbn')
+                
+                if all([book_id, title, author, subject, isbn]):
+                    if Book.update_book(book_id, title, author, subject, isbn):
+                        flash('Book updated successfully!', 'success')
+                    else:
+                        flash('Error updating book. Please try again.', 'error')
+                else:
+                    flash('Please fill in all fields', 'error')
+                
+                return redirect(url_for('librarian_book_management'))
+        
+        books = Book.get_all_books_with_filter(subject_filter, sort_by)
+        subjects = Book.get_all_subjects()
+        
+        return render_template('librarian/book_management.html', 
+                             user_name=session.get('user_name'),
+                             books=books,
+                             subjects=subjects,
+                             current_subject=subject_filter,
+                             current_sort=sort_by)
     
     @staticmethod
     def book_issue():
@@ -163,24 +224,62 @@ class LibrarianController:
                 flash('Please select a student', 'error')
             elif len(selected_books) > 3:
                 flash('You can select maximum 3 books at a time', 'error')
-            elif not Book.validate_student_id(student_id):
-                flash('Invalid student selected', 'error')
             else:
-                success_count = Book.create_multiple_reservations(selected_books, student_id)
-                if success_count > 0:
-                    if success_count == len(selected_books):
-                        flash(f'All {success_count} book reservations created successfully', 'success')
-                    else:
-                        flash(f'{success_count} out of {len(selected_books)} reservations created successfully', 'warning')
+                current_reservations = Book.get_student_reservation_count(student_id)
+                total_after_reservation = current_reservations + len(selected_books)
+                
+                if total_after_reservation > 3:
+                    flash(f'Student already has {current_reservations} reservations. Cannot reserve {len(selected_books)} more books (limit: 3)', 'error')
                 else:
-                    flash('Failed to create reservations. Books may already be reserved by this student', 'error')
+                    success_count = 0
+                    failed_books = []
+                    
+                    for book_id in selected_books:
+                        result = Book.create_reservation(book_id, student_id)
+                        if result == True:
+                            success_count += 1
+                        elif result == "limit_exceeded":
+                            flash('Student has reached the reservation limit of 3 books', 'error')
+                            break
+                        else:
+                            book = Book.get_book_by_id(book_id)
+                            if book:
+                                failed_books.append(book['title'])
+                    
+                    if success_count > 0:
+                        if success_count == len(selected_books):
+                            flash(f'All {success_count} book reservations created successfully', 'success')
+                        else:
+                            flash(f'{success_count} out of {len(selected_books)} reservations created successfully', 'warning')
+                            if failed_books:
+                                flash(f'Failed to reserve: {", ".join(failed_books)}', 'error')
+                    else:
+                        flash('Failed to create reservations. Books may already be reserved or unavailable', 'error')
         
-        books = Book.get_all_available_books()
-        students = Book.get_all_students()
-        reservations = Book.get_recent_reservations()
+        books = Book.get_all_books_with_filter('all', 'title')
+        available_books = [book for book in books if book['status'] == 'Available']
+        
+        try:
+            students_query = "SELECT UserID as user_id, Name as full_name, Email as email FROM users WHERE Role = 'Student'"
+            students = Database.execute_query(students_query) or []
+        except:
+            students = []
+        
+        try:
+            reservations_query = """
+            SELECT br.reservation_id, b.title, u.Name as full_name, br.reservation_date 
+            FROM book_reservations br 
+            JOIN books b ON br.book_id = b.book_id 
+            JOIN users u ON br.user_id = u.UserID 
+            WHERE br.status = 'Active' 
+            ORDER BY br.reservation_date DESC LIMIT 10
+            """
+            reservations = Database.execute_query(reservations_query) or []
+        except:
+            reservations = []
         
         return render_template('librarian/book_reservation.html', 
                              user_name=session.get('user_name'),
-                             books=books,
+                             books=available_books,
                              students=students,
                              reservations=reservations)

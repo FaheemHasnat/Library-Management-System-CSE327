@@ -4,6 +4,7 @@ from app.controllers.auth_controller import AuthController
 from app.controllers.admin_controller import AdminController
 from app.controllers.librarian_controller import LibrarianController
 from app.controllers.student_controller import StudentController
+from app.utils.db_initializer import DatabaseInitializer
 
 app = Flask(__name__, template_folder='app/views/templates', static_folder='app/views/static')
 app.config.from_object(Config)
@@ -57,7 +58,7 @@ def admin_delete_member():
 def admin_delete_member_by_id(user_id):
     return AdminController.delete_member_by_id(user_id)
 
-@app.route('/admin/book-management')
+@app.route('/admin/book-management', methods=['GET', 'POST'])
 def admin_book_management():
     return AdminController.book_management()
 
@@ -73,7 +74,7 @@ def admin_fines_detail():
 def librarian_dashboard():
     return LibrarianController.librarian_dashboard()
 
-@app.route('/librarian/book-management')
+@app.route('/librarian/book-management', methods=['GET', 'POST'])
 def librarian_book_management():
     return LibrarianController.book_management()
 
@@ -130,4 +131,5 @@ def student_your_books():
     return StudentController.your_books()
 
 if __name__ == '__main__':
+    DatabaseInitializer.initialize_all()
     app.run(debug=True)

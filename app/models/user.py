@@ -2,6 +2,7 @@ from app.utils.database import Database
 import hashlib
 import uuid
 
+
 class User:
     def __init__(self, user_id=None, name=None, email=None, password=None, role=None):
         self.user_id = user_id
@@ -83,10 +84,31 @@ class User:
                     connection.close()
         return None
     
-    def to_dict(self):
-        return {
-            'user_id': self.user_id,
-            'name': self.name,
-            'email': self.email,
-            'role': self.role
-        }
+    @staticmethod
+    def initialize_sample_data():
+        try:
+            existing_admin = Database.execute_query("SELECT COUNT(*) as count FROM users WHERE Role = 'Admin'")
+            if existing_admin and existing_admin[0]['count'] > 0:
+                return True
+            
+            sample_users = [
+                ('admin-001', 'System Administrator', 'admin@lms.com', 'admin123', 'Admin'),
+                ('lib-001', 'System Librarian', 'librarian@lms.com', 'lib123', 'Librarian'),
+                ('student-001', 'John Student', 'student@lms.com', 'student123', 'Student')
+            ]
+            
+            for user_data in sample_users:
+                user_id, name, email, password, role = user_data
+                hashed_password = User.hash_password(password)
+                
+                query = """
+                INSERT INTO users (UserID, Name, Email, Password, Role) 
+                VALUES (%s, %s, %s, %s, %s)
+                """
+                Database.execute_insert_query(query, (user_id, name, email, hashed_password, role))
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error initializing sample users: {e}")
+            return False

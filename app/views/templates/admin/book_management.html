@@ -4,6 +4,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -32,62 +33,375 @@
             <div class="admin-content">
                 <section class="admin-welcome">
                     <h1 class="admin-welcome-title">📚 Book Management</h1>
-                    <p class="admin-welcome-subtitle">Manage library books, inventory, and catalog operations</p>
+                    <p class="admin-welcome-subtitle">Manage library books - Add, Edit, Delete</p>
                     <a href="{{ url_for('admin_dashboard') }}" class="admin-welcome-badge">← Back to Dashboard</a>
                 </section>
 
-                <section class="admin-quick-nav">
-                    <h2 class="admin-quick-nav-title">Book Management Features</h2>
-                    <div class="admin-nav-grid">
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon members">📖</div>
-                            <div class="admin-nav-title">Add New Book</div>
-                        </div>
-                        
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">View All Books</div>
-                        </div>
-                        
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon status">✏️</div>
-                            <div class="admin-nav-title">Edit Book Info</div>
-                        </div>
-                        
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon fines">🗑️</div>
-                            <div class="admin-nav-title">Remove Book</div>
-                        </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'error' if category == 'error' else category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <section class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number">{{ books|length }}</div>
+                        <div class="admin-stat-label">Total Books</div>
                     </div>
                 </section>
 
-                <section class="admin-stats-grid">
-                    <div class="admin-fines-card">
-                        <h3 class="admin-fines-title">
-                            <div class="admin-fines-icon">📚</div>
-                            Book Statistics
-                        </h3>
-                        <div class="admin-fines-amount">Demo Mode</div>
-                        <div class="admin-progress-text">Book management functionality will be implemented here</div>
-                    </div>
+                <section class="admin-fines-card">
+                    <h3 class="admin-fines-title">
+                        <div class="admin-fines-icon">📖</div>
+                        Add New Book
+                    </h3>
+                    
+                    <form method="POST" class="book-form">
+                        <input type="hidden" name="action" value="add">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" name="title" placeholder="Book Title" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="author" placeholder="Author" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="subject" placeholder="Subject" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="isbn" placeholder="ISBN" required>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Add Book</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
 
-                    <div class="admin-notifications">
-                        <h3 class="admin-notifications-title">
-                            <div class="admin-notifications-icon">ℹ️</div>
-                            Demo Information
-                        </h3>
-                        <div class="admin-notification-item">
-                            <div class="admin-notification-text">This is a demo page for Book Management</div>
-                            <div class="admin-notification-time">Features will be added later</div>
-                        </div>
-                        <div class="admin-notification-item">
-                            <div class="admin-notification-text">Book catalog, inventory, and search features</div>
-                            <div class="admin-notification-time">Full CRUD operations</div>
-                        </div>
+                <section class="admin-fines-card">
+                    <h3 class="admin-fines-title">
+                        <div class="admin-fines-icon">🔍</div>
+                        Filter & Sort Books
+                    </h3>
+                    
+                    <div class="filter-controls">
+                        <form method="GET" class="filter-form">
+                            <select name="subject" onchange="this.form.submit()">
+                                <option value="all" {{ 'selected' if current_subject == 'all' }}>All Subjects</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject }}" {{ 'selected' if current_subject == subject }}>{{ subject }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <select name="sort" onchange="this.form.submit()">
+                                <option value="title" {{ 'selected' if current_sort == 'title' }}>Sort by Title</option>
+                                <option value="author" {{ 'selected' if current_sort == 'author' }}>Sort by Author</option>
+                                <option value="subject" {{ 'selected' if current_sort == 'subject' }}>Sort by Subject</option>
+                            </select>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="admin-fines-card">
+                    <h3 class="admin-fines-title">
+                        <div class="admin-fines-icon">📚</div>
+                        Books Library
+                    </h3>
+                    
+                    <div class="books-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Subject</th>
+                                    <th>ISBN</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                <tr id="book-{{ book.book_id }}">
+                                    <td class="editable" data-field="title">{{ book.title }}</td>
+                                    <td class="editable" data-field="author">{{ book.author }}</td>
+                                    <td class="editable" data-field="subject">{{ book.subject }}</td>
+                                    <td class="editable" data-field="isbn">{{ book.isbn }}</td>
+                                    <td>
+                                        <span class="status status-{{ book.status.lower() }}">{{ book.status }}</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-small btn-edit" onclick="editBook('{{ book.book_id }}')">Edit</button>
+                                        <button class="btn btn-small btn-danger" onclick="deleteBook('{{ book.book_id }}', '{{ book.title }}')">Delete</button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6">No books found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </section>
             </div>
         </div>
     </main>
 </div>
+
+<form id="edit-form" method="POST" style="display: none;">
+    <input type="hidden" name="action" value="edit">
+    <input type="hidden" name="book_id" id="edit-book-id">
+    <input type="hidden" name="title" id="edit-title">
+    <input type="hidden" name="author" id="edit-author">
+    <input type="hidden" name="subject" id="edit-subject">
+    <input type="hidden" name="isbn" id="edit-isbn">
+</form>
+
+<form id="delete-form" method="POST" style="display: none;">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="book_id" id="delete-book-id">
+</form>
+
+<style>
+.book-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-controls {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.filter-form {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-form select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.books-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.books-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.books-table th,
+.books-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.books-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-borrowed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-edit {
+    background: #28a745;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.editable {
+    cursor: pointer;
+}
+
+.editable:hover {
+    background: #f8f9fa;
+}
+
+.editable input {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid #007bff;
+    border-radius: 2px;
+}
+
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.admin-stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.admin-stat-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.admin-stat-label {
+    color: #666;
+    margin-top: 5px;
+}
+</style>
+
+<script>
+function editBook(bookId) {
+    const row = document.getElementById('book-' + bookId);
+    const cells = row.querySelectorAll('.editable');
+    
+    cells.forEach(cell => {
+        const currentValue = cell.textContent.trim();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentValue;
+        input.dataset.originalValue = currentValue;
+        input.dataset.field = cell.dataset.field;
+        
+        cell.innerHTML = '';
+        cell.appendChild(input);
+        
+        input.addEventListener('blur', () => saveEdit(bookId));
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveEdit(bookId);
+            }
+        });
+    });
+    
+    cells[0].querySelector('input').focus();
+}
+
+function saveEdit(bookId) {
+    const row = document.getElementById('book-' + bookId);
+    const titleInput = row.querySelector('[data-field="title"] input');
+    const authorInput = row.querySelector('[data-field="author"] input');
+    const subjectInput = row.querySelector('[data-field="subject"] input');
+    const isbnInput = row.querySelector('[data-field="isbn"] input');
+    
+    if (!titleInput || !authorInput || !subjectInput || !isbnInput) {
+        return;
+    }
+    
+    const title = titleInput.value.trim();
+    const author = authorInput.value.trim();
+    const subject = subjectInput.value.trim();
+    const isbn = isbnInput.value.trim();
+    
+    if (!title || !author || !subject || !isbn) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    titleInput.parentElement.textContent = title;
+    authorInput.parentElement.textContent = author;
+    subjectInput.parentElement.textContent = subject;
+    isbnInput.parentElement.textContent = isbn;
+    
+    document.getElementById('edit-book-id').value = bookId;
+    document.getElementById('edit-title').value = title;
+    document.getElementById('edit-author').value = author;
+    document.getElementById('edit-subject').value = subject;
+    document.getElementById('edit-isbn').value = isbn;
+    
+    document.getElementById('edit-form').submit();
+}
+
+function deleteBook(bookId, title) {
+    if (confirm('Are you sure you want to delete "' + title + '"? This action cannot be undone.')) {
+        document.getElementById('delete-book-id').value = bookId;
+        document.getElementById('delete-form').submit();
+    }
+}
+</script>
 {% endblock %}

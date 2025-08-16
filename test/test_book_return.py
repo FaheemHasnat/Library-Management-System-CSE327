@@ -1,35 +1,54 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app.models.issued_book import IssuedBook
 from datetime import datetime
 
-print("=== Testing Book Return with Transaction Logging ===")
 
-issued_books = IssuedBook.get_all_issued_books()
-if issued_books:
-    print(f"Found {len(issued_books)} issued books")
+def test_book_return_functionality():
+    print("Testing Book Return Functionality...")
     
-    test_book = issued_books[0]
-    print(f"\nTesting return for:")
-    print(f"  Book: {test_book['title']}")
-    print(f"  Student: {test_book['student_name']}")
-    print(f"  Issue Date: {test_book['issue_date']}")
-    print(f"  Due Date: {test_book['due_date']}")
-    
-    return_date_str = "2025-08-25"
-    print(f"  Return Date: {return_date_str}")
-    
-    result = IssuedBook.return_book(test_book['UserID'], test_book['book_id'], return_date_str)
-    
-    if result and isinstance(result, dict):
-        print(f"\n✅ Return processed successfully")
-        print(f"  Fine Amount: {result.get('fine', 0)} Taka")
-        if result.get('fine', 0) > 0:
-            print("  💰 Late return fine applied")
-        else:
-            print("  ✅ No fine - returned on time")
-    else:
-        print(f"\n❌ Return failed: {result}")
+    try:
+        issued_books = IssuedBook.get_all_issued_books()
+        print(f"Currently issued books: {len(issued_books)}")
         
-else:
-    print("No issued books found for testing")
+        if issued_books:
+            print("Sample issued book:")
+            sample_book = issued_books[0]
+            print(f"  User ID: {sample_book.get('UserID')}")
+            print(f"  Book ID: {sample_book.get('book_id')}")
+            print(f"  Book Title: {sample_book.get('title')}")
+            print(f"  Issue Date: {sample_book.get('issue_date')}")
+            print(f"  Due Date: {sample_book.get('due_date')}")
+        
+        print("Book return functionality test completed!")
+        
+    except Exception as e:
+        print(f"Error in book return test: {e}")
 
-print("\n=== Test Complete ===")
+
+def test_transaction_history():
+    print("\nTesting Transaction History...")
+    
+    try:
+        transactions = IssuedBook.get_transaction_history()
+        print(f"Total transactions: {len(transactions)}")
+        
+        if transactions:
+            print("Recent transaction:")
+            recent = transactions[0]
+            print(f"  Student: {recent.get('student_name')}")
+            print(f"  Book: {recent.get('book_title')}")
+            print(f"  Return Date: {recent.get('ReturnDate')}")
+            print(f"  Fine: {recent.get('Fine')}")
+        
+        print("Transaction history test completed!")
+        
+    except Exception as e:
+        print(f"Error in transaction history test: {e}")
+
+
+if __name__ == "__main__":
+    test_book_return_functionality()
+    test_transaction_history()

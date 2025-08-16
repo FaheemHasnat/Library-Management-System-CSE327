@@ -79,16 +79,16 @@
                     </h3>
                     
                     <div class="admin-notification-item">
-                        <div class="admin-notification-text"><strong>Name:</strong> {{ member.Name }}</div>
+                        <div class="admin-notification-text"><strong>Name:</strong> {{ member.name }}</div>
                     </div>
                     <div class="admin-notification-item">
-                        <div class="admin-notification-text"><strong>Email:</strong> {{ member.Email }}</div>
+                        <div class="admin-notification-text"><strong>Email:</strong> {{ member.email }}</div>
                     </div>
                     <div class="admin-notification-item">
-                        <div class="admin-notification-text"><strong>Role:</strong> {{ member.Role }}</div>
+                        <div class="admin-notification-text"><strong>Role:</strong> {{ member.role }}</div>
                     </div>
                     <div class="admin-notification-item">
-                        <div class="admin-notification-text"><strong>User ID:</strong> {{ member.UserID }}</div>
+                        <div class="admin-notification-text"><strong>User ID:</strong> {{ member.user_id }}</div>
                     </div>
 
                     <div style="margin-top: var(--spacing-xl);">
@@ -98,7 +98,7 @@
                     </div>
 
                     <form method="POST" class="auth-form">
-                        <input type="hidden" name="user_id" value="{{ member.UserID }}">
+                        <input type="hidden" name="user_id" value="{{ member.user_id }}">
                         <input type="hidden" name="action" value="delete">
                         
                         <div style="display: flex; gap: var(--spacing-md);">
