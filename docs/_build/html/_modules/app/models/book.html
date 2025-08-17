@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>app.models.book &#8212; Library-Management-System-CSE327 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for app.models.book</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">app.utils.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Database</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+
+
+<div class="viewcode-block" id="Book">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Book</span><span class="p">:</span>
+<div class="viewcode-block" id="Book.get_total_books">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_total_books">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_total_books</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT COUNT(*) as total FROM books&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;total&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">120</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">120</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_available_books">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_available_books">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_available_books</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT COUNT(*) as available FROM books WHERE status = &#39;Available&#39;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;available&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;available&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">95</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">95</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_issued_books">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_issued_books">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_issued_books</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT COUNT(*) as issued FROM books WHERE status = &#39;Borrowed&#39;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;issued&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;issued&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">18</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">18</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_overdue_books">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_overdue_books">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_overdue_books</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT COUNT(*) as overdue </span>
+<span class="s2">            FROM book_issues bi</span>
+<span class="s2">            WHERE bi.due_date &lt; CURDATE() AND bi.status = &#39;Borrowed&#39;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;overdue&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;overdue&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">3</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">3</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_reservations">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_reservations">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_reservations</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT COUNT(*) as reservations FROM book_reservations WHERE status = &#39;Active&#39;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;reservations&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;reservations&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">7</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">7</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_recent_activities">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_recent_activities">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_recent_activities</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT </span>
+<span class="s2">                CONCAT(&#39;Book &quot;&#39;, b.title, &#39;&quot; was issued to &#39;, u.full_name) as activity,</span>
+<span class="s2">                CONCAT(TIMESTAMPDIFF(HOUR, bi.created_at, NOW()), &#39; hours ago&#39;) as time_ago</span>
+<span class="s2">            FROM book_issues bi</span>
+<span class="s2">            JOIN books b ON bi.book_id = b.book_id</span>
+<span class="s2">            JOIN users u ON bi.user_id = u.user_id</span>
+<span class="s2">            WHERE DATE(bi.created_at) &gt;= DATE_SUB(CURDATE(), INTERVAL 7 DAY)</span>
+<span class="s2">            ORDER BY bi.created_at DESC</span>
+<span class="s2">            LIMIT 4</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s1">&#39;activity&#39;</span><span class="p">:</span> <span class="s1">&#39;Book &quot;Python Programming&quot; was returned&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ago&#39;</span><span class="p">:</span> <span class="s1">&#39;2 hours ago&#39;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s1">&#39;activity&#39;</span><span class="p">:</span> <span class="s1">&#39;Book &quot;Web Development&quot; was issued&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ago&#39;</span><span class="p">:</span> <span class="s1">&#39;4 hours ago&#39;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s1">&#39;activity&#39;</span><span class="p">:</span> <span class="s1">&#39;Book &quot;Database Design&quot; was returned&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ago&#39;</span><span class="p">:</span> <span class="s1">&#39;6 hours ago&#39;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s1">&#39;activity&#39;</span><span class="p">:</span> <span class="s1">&#39;Book &quot;Machine Learning&quot; was issued&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ago&#39;</span><span class="p">:</span> <span class="s1">&#39;1 day ago&#39;</span><span class="p">}</span>
+        <span class="p">]</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_library_stats">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_library_stats">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_library_stats</span><span class="p">():</span>
+        <span class="n">total_books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">get_total_books</span><span class="p">()</span>
+        <span class="n">available_books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">get_available_books</span><span class="p">()</span>
+        <span class="n">issued_books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">get_issued_books</span><span class="p">()</span>
+        <span class="n">overdue_books</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">get_overdue_books</span><span class="p">()</span>
+        <span class="n">reservations</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">get_reservations</span><span class="p">()</span>
+        
+        <span class="n">availability_percentage</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">available_books</span> <span class="o">/</span> <span class="n">total_books</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span> <span class="k">if</span> <span class="n">total_books</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;total_books&#39;</span><span class="p">:</span> <span class="n">total_books</span><span class="p">,</span>
+            <span class="s1">&#39;available_books&#39;</span><span class="p">:</span> <span class="n">available_books</span><span class="p">,</span>
+            <span class="s1">&#39;issued_books&#39;</span><span class="p">:</span> <span class="n">issued_books</span><span class="p">,</span>
+            <span class="s1">&#39;overdue_books&#39;</span><span class="p">:</span> <span class="n">overdue_books</span><span class="p">,</span>
+            <span class="s1">&#39;reservations&#39;</span><span class="p">:</span> <span class="n">reservations</span><span class="p">,</span>
+            <span class="s1">&#39;availability_percentage&#39;</span><span class="p">:</span> <span class="n">availability_percentage</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_all_available_books">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_all_available_books">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_available_books</span><span class="p">():</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT book_id, title, author, isbn, subject, status </span>
+<span class="s2">        FROM books </span>
+<span class="s2">        WHERE status = &#39;Available&#39;</span>
+<span class="s2">        ORDER BY title</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_all_students">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_all_students">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_students</span><span class="p">():</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT user_id, full_name, email </span>
+<span class="s2">        FROM users </span>
+<span class="s2">        WHERE role = &#39;Student&#39; </span>
+<span class="s2">        ORDER BY full_name</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.create_multiple_reservations">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.create_multiple_reservations">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_multiple_reservations</span><span class="p">(</span><span class="n">book_ids</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="n">success_count</span> <span class="o">=</span> <span class="mi">0</span>
+            
+            <span class="k">for</span> <span class="n">book_id</span> <span class="ow">in</span> <span class="n">book_ids</span><span class="p">:</span>
+                <span class="n">check_existing_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                SELECT COUNT(*) as count FROM book_reservations </span>
+<span class="s2">                WHERE book_id = </span><span class="si">%s</span><span class="s2"> AND user_id = </span><span class="si">%s</span><span class="s2"> AND status = &#39;Active&#39;</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_existing_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+                <span class="n">existing</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="n">existing</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">check_book_available_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                    SELECT status FROM books WHERE book_id = </span><span class="si">%s</span>
+<span class="s2">                    &quot;&quot;&quot;</span>
+                    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_book_available_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
+                    <span class="n">book_status</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+                    
+                    <span class="k">if</span> <span class="n">book_status</span> <span class="ow">and</span> <span class="n">book_status</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Available&#39;</span><span class="p">:</span>
+                        <span class="n">insert_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                        INSERT INTO book_reservations (book_id, user_id, reservation_date, status) </span>
+<span class="s2">                        VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, CURDATE(), &#39;Active&#39;)</span>
+<span class="s2">                        &quot;&quot;&quot;</span>
+                        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+                        <span class="n">success_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">success_count</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_user_by_email">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_user_by_email">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_by_email</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT user_id, full_name, email, role </span>
+<span class="s2">        FROM users </span>
+<span class="s2">        WHERE email = </span><span class="si">%s</span><span class="s2"> AND role = &#39;Student&#39;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">email</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="Book.validate_student_id">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.validate_student_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_student_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT user_id </span>
+<span class="s2">        FROM users </span>
+<span class="s2">        WHERE user_id = </span><span class="si">%s</span><span class="s2"> AND role = &#39;Student&#39;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_recent_reservations">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_recent_reservations">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_recent_reservations</span><span class="p">():</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT DATE(br.reservation_date) as reservation_date, </span>
+<span class="s2">               br.status,</span>
+<span class="s2">               b.title, u.full_name, u.email</span>
+<span class="s2">        FROM book_reservations br</span>
+<span class="s2">        JOIN books b ON br.book_id = b.book_id</span>
+<span class="s2">        JOIN users u ON br.user_id = u.user_id</span>
+<span class="s2">        ORDER BY br.created_at DESC</span>
+<span class="s2">        LIMIT 10</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_user_reservations">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_user_reservations">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_reservations</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT br.reservation_id, br.reservation_date, br.status,</span>
+<span class="s2">                   b.title, b.author, b.isbn, b.subject</span>
+<span class="s2">            FROM book_reservations br</span>
+<span class="s2">            JOIN books b ON br.book_id = b.book_id</span>
+<span class="s2">            WHERE br.user_id = </span><span class="si">%s</span><span class="s2"> AND br.status = &#39;Active&#39;</span>
+<span class="s2">            ORDER BY br.created_at DESC</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+            <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_user_reservation_count">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_user_reservation_count">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_reservation_count</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT COUNT(*) as count</span>
+<span class="s2">            FROM book_reservations</span>
+<span class="s2">            WHERE user_id = </span><span class="si">%s</span><span class="s2"> AND status = &#39;Active&#39;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">and</span> <span class="s1">&#39;count&#39;</span> <span class="ow">in</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_all_books">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_all_books">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_books</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT book_id, title, author, subject, isbn, status </span>
+<span class="s2">            FROM books </span>
+<span class="s2">            ORDER BY title</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_all_books_with_filter">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_all_books_with_filter">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_books_with_filter</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;title&#39;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">base_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT book_id, title, author, subject, isbn, status </span>
+<span class="s2">            FROM books</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            
+            <span class="k">if</span> <span class="n">subject</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">!=</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">base_query</span> <span class="o">+</span> <span class="s2">&quot; WHERE subject = </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="p">(</span><span class="n">subject</span><span class="p">,)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">base_query</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="kc">None</span>
+            
+            <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">&#39;subject&#39;</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot; ORDER BY subject, title&quot;</span>
+            <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">&#39;author&#39;</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot; ORDER BY author, title&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot; ORDER BY title&quot;</span>
+            
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_all_subjects">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_all_subjects">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_subjects</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT DISTINCT subject FROM books ORDER BY subject&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+    
+<div class="viewcode-block" id="Book.add_book">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.add_book">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_book</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">isbn</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">book_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                INSERT INTO books (book_id, title, author, subject, isbn, status) </span>
+<span class="s2">                VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, &#39;Available&#39;)</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">isbn</span><span class="p">))</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error adding book: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_book_by_id">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_book_by_id">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_book_by_id</span><span class="p">(</span><span class="n">book_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;SELECT * FROM books WHERE book_id = </span><span class="si">%s</span><span class="s2">&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    
+<div class="viewcode-block" id="Book.update_book">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.update_book">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_book</span><span class="p">(</span><span class="n">book_id</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">isbn</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                UPDATE books </span>
+<span class="s2">                SET title = </span><span class="si">%s</span><span class="s2">, author = </span><span class="si">%s</span><span class="s2">, subject = </span><span class="si">%s</span><span class="s2">, isbn = </span><span class="si">%s</span><span class="s2"> </span>
+<span class="s2">                WHERE book_id = </span><span class="si">%s</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">isbn</span><span class="p">,</span> <span class="n">book_id</span><span class="p">))</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating book: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Book.delete_book">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.delete_book">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_book</span><span class="p">(</span><span class="n">book_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="p">:</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                
+                <span class="n">check_query</span> <span class="o">=</span> <span class="s2">&quot;SELECT status FROM books WHERE book_id = </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
+                <span class="n">book</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">book</span><span class="p">:</span>
+                    <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                
+                <span class="k">if</span> <span class="n">book</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Borrowed&#39;</span><span class="p">:</span>
+                    <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="s2">&quot;borrowed&quot;</span>
+                
+                <span class="n">delete_query</span> <span class="o">=</span> <span class="s2">&quot;DELETE FROM books WHERE book_id = </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error deleting book: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Book.initialize_sample_data">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.initialize_sample_data">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_sample_data</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">existing_books</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) as count FROM books&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">existing_books</span> <span class="ow">and</span> <span class="n">existing_books</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            
+            <span class="n">sample_books</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s1">&#39;book-001&#39;</span><span class="p">,</span> <span class="s1">&#39;Python Programming&#39;</span><span class="p">,</span> <span class="s1">&#39;John Smith&#39;</span><span class="p">,</span> <span class="s1">&#39;Computer Science&#39;</span><span class="p">,</span> <span class="s1">&#39;978-1234567890&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-002&#39;</span><span class="p">,</span> <span class="s1">&#39;Web Development&#39;</span><span class="p">,</span> <span class="s1">&#39;Jane Doe&#39;</span><span class="p">,</span> <span class="s1">&#39;Computer Science&#39;</span><span class="p">,</span> <span class="s1">&#39;978-0987654321&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-003&#39;</span><span class="p">,</span> <span class="s1">&#39;Database Design&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob Johnson&#39;</span><span class="p">,</span> <span class="s1">&#39;Computer Science&#39;</span><span class="p">,</span> <span class="s1">&#39;978-1122334455&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-004&#39;</span><span class="p">,</span> <span class="s1">&#39;Mathematics&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice Brown&#39;</span><span class="p">,</span> <span class="s1">&#39;Mathematics&#39;</span><span class="p">,</span> <span class="s1">&#39;978-5566778899&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-005&#39;</span><span class="p">,</span> <span class="s1">&#39;Physics Fundamentals&#39;</span><span class="p">,</span> <span class="s1">&#39;Charlie Wilson&#39;</span><span class="p">,</span> <span class="s1">&#39;Physics&#39;</span><span class="p">,</span> <span class="s1">&#39;978-9988776655&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-006&#39;</span><span class="p">,</span> <span class="s1">&#39;Chemistry Basics&#39;</span><span class="p">,</span> <span class="s1">&#39;David Lee&#39;</span><span class="p">,</span> <span class="s1">&#39;Chemistry&#39;</span><span class="p">,</span> <span class="s1">&#39;978-1357924680&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-007&#39;</span><span class="p">,</span> <span class="s1">&#39;History of Art&#39;</span><span class="p">,</span> <span class="s1">&#39;Emma White&#39;</span><span class="p">,</span> <span class="s1">&#39;Arts&#39;</span><span class="p">,</span> <span class="s1">&#39;978-2468135790&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;book-008&#39;</span><span class="p">,</span> <span class="s1">&#39;Literature Analysis&#39;</span><span class="p">,</span> <span class="s1">&#39;Frank Green&#39;</span><span class="p">,</span> <span class="s1">&#39;Literature&#39;</span><span class="p">,</span> <span class="s1">&#39;978-3691470258&#39;</span><span class="p">,</span> <span class="s1">&#39;Available&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+            
+            <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">sample_books</span><span class="p">:</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                INSERT INTO books (book_id, title, author, subject, isbn, status) </span>
+<span class="s2">                VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">Database</span><span class="o">.</span><span class="n">execute_insert_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">book</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="kc">True</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error initializing sample data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Book.create_reservation">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.create_reservation">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_reservation</span><span class="p">(</span><span class="n">book_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            
+            <span class="n">check_student_reservations_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT COUNT(*) FROM book_reservations WHERE user_id = </span><span class="si">%s</span><span class="s2"> AND status = &#39;Active&#39;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_student_reservations_query</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+            <span class="n">reservation_count</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="k">if</span> <span class="n">reservation_count</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;limit_exceeded&quot;</span>
+            
+            <span class="n">check_book_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT status FROM books WHERE book_id = </span><span class="si">%s</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_book_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
+            <span class="n">book_status</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">book_status</span> <span class="ow">or</span> <span class="n">book_status</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;Available&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            
+            <span class="n">check_existing_reservation_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT COUNT(*) FROM book_reservations </span>
+<span class="s2">            WHERE book_id = </span><span class="si">%s</span><span class="s2"> AND user_id = </span><span class="si">%s</span><span class="s2"> AND status = &#39;Active&#39;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_existing_reservation_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+            <span class="n">existing_count</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="k">if</span> <span class="n">existing_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            
+            <span class="n">reservation_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+            
+            <span class="n">insert_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            INSERT INTO book_reservations (reservation_id, book_id, user_id, reservation_date, status) </span>
+<span class="s2">            VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, CURDATE(), &#39;Active&#39;)</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert_query</span><span class="p">,</span> <span class="p">(</span><span class="n">reservation_id</span><span class="p">,</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">))</span>
+            
+            <span class="n">update_query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            UPDATE books SET status = &#39;Reserved&#39; WHERE book_id = </span><span class="si">%s</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update_query</span><span class="p">,</span> <span class="p">(</span><span class="n">book_id</span><span class="p">,))</span>
+            
+            <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">connection</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="Book.get_student_reservation_count">
+<a class="viewcode-back" href="../../../app.models.html#app.models.book.Book.get_student_reservation_count">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_student_reservation_count</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        SELECT COUNT(*) as count FROM book_reservations </span>
+<span class="s2">        WHERE user_id = </span><span class="si">%s</span><span class="s2"> AND status = &#39;Active&#39;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Database</span><span class="o">.</span><span class="n">execute_single_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">user_id</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="mi">0</span></div>
+</div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Library-Management-System-CSE327</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Group 11.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
