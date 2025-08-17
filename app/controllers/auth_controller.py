@@ -27,7 +27,8 @@ class AuthController:
                 elif user.role == 'Librarian':
                     return redirect(url_for('librarian_dashboard'))
                 elif user.role == 'Student':
-                    return redirect(url_for('student_dashboard'))
+                    flash('Student access is not available in this version', 'info')
+                    return redirect(url_for('dashboard'))
                 else:
                     return redirect(url_for('dashboard'))
             else:
