@@ -63,17 +63,17 @@ class User:
         if User.get_by_email(email):
             return None
         
-        user_id = str(uuid.uuid4())
         hashed_password = User.hash_password(password)
         
         connection = Database.get_connection()
         if connection:
             try:
                 cursor = connection.cursor()
-                query = "INSERT INTO users (UserID, Name, Email, Password, Role) VALUES (%s, %s, %s, %s, %s)"
-                cursor.execute(query, (user_id, name, email, hashed_password, role))
+                query = "INSERT INTO users (Name, Email, Password, Role) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (name, email, hashed_password, role))
                 connection.commit()
                 
+                user_id = cursor.lastrowid
                 return User(user_id=user_id, name=name, email=email, role=role)
             except Exception as e:
                 print(f"Error creating user: {e}")
@@ -92,20 +92,20 @@ class User:
                 return True
             
             sample_users = [
-                ('admin-001', 'System Administrator', 'admin@lms.com', 'admin123', 'Admin'),
-                ('lib-001', 'System Librarian', 'librarian@lms.com', 'lib123', 'Librarian'),
-                ('student-001', 'John Student', 'student@lms.com', 'student123', 'Student')
+                ('System Administrator', 'admin@lms.com', 'admin123', 'Admin'),
+                ('System Librarian', 'librarian@lms.com', 'lib123', 'Librarian'),
+                ('John Student', 'student@lms.com', 'student123', 'Student')
             ]
             
             for user_data in sample_users:
-                user_id, name, email, password, role = user_data
+                name, email, password, role = user_data
                 hashed_password = User.hash_password(password)
                 
                 query = """
-                INSERT INTO users (UserID, Name, Email, Password, Role) 
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO users (Name, Email, Password, Role) 
+                VALUES (%s, %s, %s, %s)
                 """
-                Database.execute_insert_query(query, (user_id, name, email, hashed_password, role))
+                Database.execute_insert_query(query, (name, email, hashed_password, role))
             
             return True
             

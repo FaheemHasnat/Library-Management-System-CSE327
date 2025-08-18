@@ -112,10 +112,10 @@ class Book:
     @staticmethod
     def get_all_students():
         query = """
-        SELECT user_id, full_name, email 
+        SELECT UserID as user_id, Name as full_name, Email as email 
         FROM users 
-        WHERE role = 'Student' 
-        ORDER BY full_name
+        WHERE Role = 'Student' 
+        ORDER BY Name
         """
         result = Database.execute_query(query)
         return result if result else []
@@ -166,9 +166,9 @@ class Book:
     @staticmethod
     def get_user_by_email(email):
         query = """
-        SELECT user_id, full_name, email, role 
+        SELECT UserID as user_id, Name as full_name, Email as email, Role as role 
         FROM users 
-        WHERE email = %s AND role = 'Student'
+        WHERE Email = %s AND Role = 'Student'
         """
         result = Database.execute_single_query(query, (email,))
         return result if result else None
@@ -176,9 +176,9 @@ class Book:
     @staticmethod
     def validate_student_id(user_id):
         query = """
-        SELECT user_id 
+        SELECT UserID 
         FROM users 
-        WHERE user_id = %s AND role = 'Student'
+        WHERE UserID = %s AND Role = 'Student'
         """
         result = Database.execute_single_query(query, (user_id,))
         return result is not None

@@ -28,6 +28,18 @@ class DatabaseInitializer:
         from app.utils.database import Database
         
         try:
+            users_table = """
+            CREATE TABLE IF NOT EXISTS users (
+                UserID INT AUTO_INCREMENT PRIMARY KEY,
+                Name VARCHAR(255) NOT NULL,
+                Email VARCHAR(255) UNIQUE NOT NULL,
+                Password VARCHAR(255) NOT NULL,
+                Role ENUM('Admin', 'Librarian', 'Student') NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+            """
+            
             books_table = """
             CREATE TABLE IF NOT EXISTS books (
                 book_id VARCHAR(50) PRIMARY KEY,
@@ -41,49 +53,21 @@ class DatabaseInitializer:
             )
             """
             
-            users_table = """
-            CREATE TABLE IF NOT EXISTS users (
-                user_id VARCHAR(50) PRIMARY KEY,
-                full_name VARCHAR(255) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                role ENUM('Admin', 'Librarian', 'Student') NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
-            """
-            
-            issued_books_table = """
-            CREATE TABLE IF NOT EXISTS issued_books (
-                issue_id VARCHAR(50) PRIMARY KEY,
-                book_id VARCHAR(50),
-                user_id VARCHAR(50),
-                issue_date DATE,
-                due_date DATE,
-                return_date DATE NULL,
-                status ENUM('Issued', 'Returned', 'Overdue') DEFAULT 'Issued',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
-                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-            )
-            """
-            
             reservations_table = """
             CREATE TABLE IF NOT EXISTS book_reservations (
                 reservation_id VARCHAR(50) PRIMARY KEY,
                 book_id VARCHAR(50),
-                user_id VARCHAR(50),
+                user_id INT,
                 reservation_date DATE,
                 status ENUM('Active', 'Fulfilled', 'Cancelled') DEFAULT 'Active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
-                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+                FOREIGN KEY (user_id) REFERENCES users(UserID) ON DELETE CASCADE
             )
             """
             
-            Database.execute_insert_query(books_table)
             Database.execute_insert_query(users_table)
-            Database.execute_insert_query(issued_books_table)
+            Database.execute_insert_query(books_table)
             Database.execute_insert_query(reservations_table)
             
             print("✓ Database tables created")

@@ -36,32 +36,36 @@
                     <span class="admin-welcome-badge">Administrator Access</span>
                 </section>
 
-                <section class="admin-quick-nav">
-                    <h2 class="admin-quick-nav-title">Quick Access</h2>
-                    <div class="admin-nav-grid">
-                        <a href="{{ url_for('admin_member_management') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon members">👥</div>
-                            <div class="admin-nav-title">Member Management</div>
-                        </a>
+                <section class="admin-stats-overview">
+                    <h2 class="admin-stats-title">Library Overview</h2>
+                    <div class="admin-stats-grid">
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📚</div>
+                            <div class="admin-stat-number">1,247</div>
+                            <div class="admin-stat-label">Total Books</div>
+                        </div>
                         
-                        <a href="{{ url_for('admin_book_management') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">Book Management</div>
-                        </a>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">👥</div>
+                            <div class="admin-stat-number">342</div>
+                            <div class="admin-stat-label">Total Members</div>
+                        </div>
                         
-                        <a href="{{ url_for('admin_book_status') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon status">📊</div>
-                            <div class="admin-nav-title">Book Status</div>
-                        </a>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📖</div>
+                            <div class="admin-stat-number">89</div>
+                            <div class="admin-stat-label">Books Issued</div>
+                        </div>
                         
-                        <a href="{{ url_for('admin_fines_detail') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon fines">💰</div>
-                            <div class="admin-nav-title">Fines Management</div>
-                        </a>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📋</div>
+                            <div class="admin-stat-number">23</div>
+                            <div class="admin-stat-label">Reservations</div>
+                        </div>
                     </div>
                 </section>
 
-                <section class="admin-stats-grid">
+                <section class="admin-activity-section">
                     <div class="admin-fines-card">
                         <h3 class="admin-fines-title">
                             <div class="admin-fines-icon">💰</div>
