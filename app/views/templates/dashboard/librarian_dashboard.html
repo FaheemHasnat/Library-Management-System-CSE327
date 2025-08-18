@@ -37,38 +37,8 @@
                 </section>
 
                 <section class="admin-quick-nav">
-                    <h2 class="admin-quick-nav-title">Quick Access</h2>
+                    <h2 class="admin-quick-nav-title">Available Actions</h2>
                     <div class="admin-nav-grid">
-                        <a href="{{ url_for('librarian_book_management') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">Book Management</div>
-                        </a>
-                        
-                        <a href="{{ url_for('librarian_book_issue') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon status">📤</div>
-                            <div class="admin-nav-title">Book Issue</div>
-                        </a>
-                        
-                        <a href="{{ url_for('librarian_book_return') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon status">�</div>
-                            <div class="admin-nav-title">Book Return</div>
-                        </a>
-                        
-                        <a href="{{ url_for('librarian_book_status') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon status">📊</div>
-                            <div class="admin-nav-title">Book Status</div>
-                        </a>
-                        
-                        <a href="{{ url_for('librarian_fines_management') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon fines">💰</div>
-                            <div class="admin-nav-title">Fines Management</div>
-                        </a>
-
-                        <a href="{{ url_for('librarian_notification_system') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon members">🔔</div>
-                            <div class="admin-nav-title">Manage Notifications</div>
-                        </a>
-
                         <a href="{{ url_for('librarian_book_reservation') }}" class="admin-nav-item">
                             <div class="admin-nav-icon status">📋</div>
                             <div class="admin-nav-title">Book Reservation</div>
@@ -76,7 +46,7 @@
                     </div>
                 </section>
 
-                <section class="admin-stats-grid">
+                <section class="admin-activity-section">
                     <div class="admin-fines-card">
                         <h3 class="admin-fines-title">
                             <div class="admin-fines-icon">📊</div>
@@ -113,27 +83,31 @@
                     </div>
                 </section>
 
-                <section class="admin-quick-nav">
-                    <h2 class="admin-quick-nav-title">Quick Statistics</h2>
-                    <div class="admin-nav-grid">
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">Books Available</div>
+                <section class="admin-stats-overview">
+                    <h2 class="admin-stats-title">Library Statistics</h2>
+                    <div class="admin-stats-grid">
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📚</div>
+                            <div class="admin-stat-number">1,247</div>
+                            <div class="admin-stat-label">Books Available</div>
                         </div>
                         
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon status">📤</div>
-                            <div class="admin-nav-title">Books Issued</div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📤</div>
+                            <div class="admin-stat-number">89</div>
+                            <div class="admin-stat-label">Books Issued</div>
                         </div>
                         
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon fines">⚠️</div>
-                            <div class="admin-nav-title">Books Overdue</div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">⚠️</div>
+                            <div class="admin-stat-number">5</div>
+                            <div class="admin-stat-label">Books Overdue</div>
                         </div>
                         
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon members">📋</div>
-                            <div class="admin-nav-title">Reservations</div>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📋</div>
+                            <div class="admin-stat-number">23</div>
+                            <div class="admin-stat-label">Reservations</div>
                         </div>
                     </div>
                 </section>

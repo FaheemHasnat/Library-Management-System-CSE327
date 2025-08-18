@@ -36,32 +36,36 @@
                     <span class="admin-welcome-badge">Student Access</span>
                 </section>
 
-                <section class="admin-quick-nav">
-                    <h2 class="admin-quick-nav-title">Quick Access</h2>
-                    <div class="admin-nav-grid">
-                        <a href="{{ url_for('student_book_status') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">Book Status</div>
-                        </a>
+                <section class="admin-stats-overview">
+                    <h2 class="admin-stats-title">Your Library Account</h2>
+                    <div class="admin-stats-grid">
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📚</div>
+                            <div class="admin-stat-number">{{ stats.issued_books }}</div>
+                            <div class="admin-stat-label">Books Issued</div>
+                        </div>
                         
-                        <a href="{{ url_for('student_book_reservation') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon members">📋</div>
-                            <div class="admin-nav-title">Book Reservation</div>
-                        </a>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📖</div>
+                            <div class="admin-stat-number">{{ stats.available_books }}</div>
+                            <div class="admin-stat-label">Books Available</div>
+                        </div>
                         
-                        <a href="{{ url_for('student_account_status') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon status">💳</div>
-                            <div class="admin-nav-title">Account Status</div>
-                        </a>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">💰</div>
+                            <div class="admin-stat-number">${{ "%.2f"|format(stats.pending_fines) }}</div>
+                            <div class="admin-stat-label">Pending Fines</div>
+                        </div>
                         
-                        <a href="{{ url_for('student_your_books') }}" class="admin-nav-item">
-                            <div class="admin-nav-icon books">�</div>
-                            <div class="admin-nav-title">Your Books</div>
-                        </a>
+                        <div class="admin-stat-card">
+                            <div class="admin-stat-icon">📋</div>
+                            <div class="admin-stat-number">{{ stats.reservations }}</div>
+                            <div class="admin-stat-label">Reservations</div>
+                        </div>
                     </div>
                 </section>
 
-                <section class="admin-stats-grid">
+                <section class="admin-activity-section">
                     <div class="admin-fines-card">
                         <h3 class="admin-fines-title">
                             <div class="admin-fines-icon">💰</div>
@@ -92,31 +96,6 @@
                                 <div class="admin-notification-time">Today</div>
                             </div>
                         {% endif %}
-                    </div>
-                </section>
-
-                <section class="admin-quick-nav">
-                    <h2 class="admin-quick-nav-title">Quick Statistics</h2>
-                    <div class="admin-nav-grid">
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon books">📚</div>
-                            <div class="admin-nav-title">{{ stats.issued_books }} Issued</div>
-                        </div>
-                        
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon status">📖</div>
-                            <div class="admin-nav-title">{{ stats.available_books }} Available</div>
-                        </div>
-                        
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon fines">💰</div>
-                            <div class="admin-nav-title">${{ "%.2f"|format(stats.pending_fines) }} Fines</div>
-                        </div>
-                        
-                        <div class="admin-nav-item">
-                            <div class="admin-nav-icon members">📋</div>
-                            <div class="admin-nav-title">{{ stats.reservations }} Reservations</div>
-                        </div>
                     </div>
                 </section>
             </div>
