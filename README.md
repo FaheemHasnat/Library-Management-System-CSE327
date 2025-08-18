@@ -32,6 +32,29 @@ A streamlined library management system built with Python Flask following MVC ar
    python app.py
    ```
 
+## Testing
+
+The project includes comprehensive unit tests using pytest framework.
+
+### Run Tests
+```bash
+# Run all tests
+pytest test/ -v
+
+# Run specific test file
+pytest test/test_member_management.py -v
+
+# Using the test runner script
+python run_tests.py
+```
+
+### Test Coverage
+- **Member Management**: Add, edit, delete, view members
+- **Book Issue**: Issue books with validation and limits
+- **Book Return**: Return books with fine calculation
+
+See `test/README.md` for detailed testing documentation.
+
 ## Technology Stack
 
 - Backend: Python Flask
@@ -39,6 +62,7 @@ A streamlined library management system built with Python Flask following MVC ar
 - Frontend: HTML, CSS (no frameworks)
 - Architecture: MVC Pattern
 - Code Standard: PEP8
+- Testing: pytest, pytest-mock
 
 ## Project Structure
 
@@ -47,6 +71,8 @@ LibMS/
 ├── app.py                 # Main application file
 ├── config.py              # Configuration settings
 ├── requirements.txt       # Dependencies
+├── run_tests.py          # Test runner script
+├── pytest.ini           # Pytest configuration
 ├── app/
 │   ├── controllers/       # Business logic
 │   │   ├── auth_controller.py
@@ -58,6 +84,11 @@ LibMS/
 │   │   └── issued_book.py
 │   ├── utils/            # Database utilities
 │   └── views/            # Templates and static files
+└── test/                 # Unit tests
+    ├── test_member_management.py
+    ├── test_book_issue.py
+    ├── test_book_return.py
+    └── README.md         # Testing documentation
 ```
 
 ## Default Login Credentials
