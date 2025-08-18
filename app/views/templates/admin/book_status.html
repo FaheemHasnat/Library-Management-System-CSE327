@@ -69,7 +69,7 @@
                         <div class="table-stat-item">
                             <div class="table-stat-icon">📊</div>
                             <div>
-                                <div class="table-stat-value">{{ (books|selectattr('status', 'equalto', 'Available')|list|length / books|length * 100)|round|int }}%</div>
+                                <div class="table-stat-value">{{ books|length > 0 and ((books|selectattr('status', 'equalto', 'Available')|list|length / books|length * 100)|round|int) or 0 }}%</div>
                                 <div class="table-stat-label">Availability</div>
                             </div>
                         </div>

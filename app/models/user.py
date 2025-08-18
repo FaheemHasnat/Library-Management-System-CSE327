@@ -4,6 +4,26 @@ import uuid
 
 
 class User:
+    @staticmethod
+    def get_all_books():
+        try:
+            User.initialize_sample_books()
+            query = "SELECT * FROM books"
+            books_data = Database.execute_query(query)
+            books = []
+            if books_data:
+                for book in books_data:
+                    books.append({
+                        'title': book.get('title', ''),
+                        'author': book.get('author', ''),
+                        'subject': book.get('subject', ''),
+                        'isbn': book.get('isbn', ''),
+                        'status': book.get('status', '')
+                    })
+            return books
+        except Exception as e:
+            print(f"Error fetching books: {e}")
+            return []
     def __init__(self, user_id=None, name=None, email=None, password=None, role=None):
         self.user_id = user_id
         self.name = name
@@ -87,6 +107,8 @@ class User:
     @staticmethod
     def initialize_sample_data():
         try:
+            Database.execute_insert_query("CREATE TABLE IF NOT EXISTS users (UserID VARCHAR(50) PRIMARY KEY, Name VARCHAR(255), Email VARCHAR(255) UNIQUE, Password VARCHAR(255), Role VARCHAR(50))", ())
+            
             existing_admin = Database.execute_query("SELECT COUNT(*) as count FROM users WHERE Role = 'Admin'")
             if existing_admin and existing_admin[0]['count'] > 0:
                 return True
@@ -111,4 +133,32 @@ class User:
             
         except Exception as e:
             print(f"Error initializing sample users: {e}")
+            return False
+
+    @staticmethod
+    def initialize_sample_books():
+        try:
+            existing_books = Database.execute_query("SELECT COUNT(*) as count FROM books")
+            if existing_books and existing_books[0]['count'] > 5:
+                return True
+            
+            sample_books = [
+                ('978-0-13-110362-7', 'The Art of Computer Programming', 'Donald Knuth', 'Computer Science', 'Available'),
+                ('978-0-262-03384-8', 'Introduction to Algorithms', 'Thomas Cormen', 'Computer Science', 'Available'),
+                ('978-0-321-57351-3', 'Effective Java', 'Joshua Bloch', 'Programming', 'Borrowed'),
+                ('978-0-13-601970-1', 'C Programming Language', 'Brian Kernighan', 'Programming', 'Available'),
+                ('978-0-596-52068-7', 'JavaScript: The Good Parts', 'Douglas Crockford', 'Web Development', 'Reserved')
+            ]
+            
+            for book_data in sample_books:
+                isbn, title, author, subject, status = book_data
+                existing = Database.execute_query("SELECT COUNT(*) as count FROM books WHERE isbn = %s", (isbn,))
+                if existing and existing[0]['count'] == 0:
+                    query = "INSERT INTO books (isbn, title, author, subject, status) VALUES (%s, %s, %s, %s, %s)"
+                    Database.execute_insert_query(query, (isbn, title, author, subject, status))
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error initializing sample books: {e}")
             return False

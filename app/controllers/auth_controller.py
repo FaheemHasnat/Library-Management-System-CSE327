@@ -3,6 +3,45 @@ from app.models.user import User
 
 class AuthController:
     @staticmethod
+    def librarian_dashboard():
+        if 'user_id' not in session or session.get('user_role') != 'Librarian':
+            flash('Access denied', 'error')
+            return redirect(url_for('login'))
+        return render_template('dashboard/librarian_dashboard.html', user_name=session.get('user_name'))
+
+    @staticmethod
+    def student_dashboard():
+        if 'user_id' not in session or session.get('user_role') != 'Student':
+            flash('Access denied', 'error')
+            return redirect(url_for('login'))
+        return render_template('dashboard/student_dashboard.html', user_name=session.get('user_name'))
+    @staticmethod
+    def admin_book_status():
+        if 'user_id' not in session or session.get('user_role') != 'Admin':
+            flash('Access denied', 'error')
+            return redirect(url_for('login'))
+        User.initialize_sample_data()
+        books = User.get_all_books()
+        return render_template('admin/book_status.html', user_name=session.get('user_name'), books=books)
+
+    @staticmethod
+    def librarian_book_status():
+        if 'user_id' not in session or session.get('user_role') != 'Librarian':
+            flash('Access denied', 'error')
+            return redirect(url_for('login'))
+        User.initialize_sample_data()
+        books = User.get_all_books()
+        return render_template('librarian/book_status.html', user_name=session.get('user_name'), books=books)
+
+    @staticmethod
+    def student_book_status():
+        if 'user_id' not in session or session.get('user_role') != 'Student':
+            flash('Access denied', 'error')
+            return redirect(url_for('login'))
+        User.initialize_sample_data()
+        books = User.get_all_books()
+        return render_template('student/book_status.html', user_name=session.get('user_name'), books=books)
+    @staticmethod
     def login():
         if request.method == 'POST':
             email = request.form.get('email')
@@ -12,6 +51,7 @@ class AuthController:
                 flash('Please enter both email and password', 'error')
                 return render_template('auth/login.html')
             
+            User.initialize_sample_data()
             user = User.authenticate(email, password)
             
             if user:
