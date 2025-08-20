@@ -68,23 +68,9 @@ class DatabaseInitializer:
             )
             """
             
-            reservations_table = """
-            CREATE TABLE IF NOT EXISTS book_reservations (
-                reservation_id VARCHAR(50) PRIMARY KEY,
-                book_id VARCHAR(50),
-                user_id VARCHAR(50),
-                reservation_date DATE,
-                status ENUM('Active', 'Fulfilled', 'Cancelled') DEFAULT 'Active',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
-                FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-            )
-            """
-            
             Database.execute_insert_query(books_table)
             Database.execute_insert_query(users_table)
             Database.execute_insert_query(issued_books_table)
-            Database.execute_insert_query(reservations_table)
             
             print("✓ Database tables created")
             return True
